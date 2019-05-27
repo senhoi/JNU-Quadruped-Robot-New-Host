@@ -156,17 +156,20 @@ void RC_Update_ZeroPara(RC_Robot_t *pRoobt,
 	pRoobt->Mat.PosFrm2ZeroFrm[RC_LEG_RH] = cmat_se3(zero_x - zero_l / 2, zero_y - zero_w / 2, 0);
 }
 
-void RC_Calc_FootTraj__(RC_Robot_t *pRoobt, double phase, double *pos_x, double *pos_y, double *pos_z)
+void RC_Calc_FootTraj__(RC_Robot_t *pRoobt, double phase, double *pos_x, double *pos_y, double *pos_z, double *omega)
 {
 	float span_x = pRoobt->Move.span_x;
 	float span_y = pRoobt->Move.span_y;
 	float span_z = pRoobt->Move.span_z;
+	float span_w = pRoobt->Move.span_w;
 	float spd_x = pRoobt->Move.span_x / pRoobt->Move.duty_ratio;
 	float spd_y = pRoobt->Move.span_y / pRoobt->Move.duty_ratio;
+	float spd_w = pRoobt->Move.span_w / pRoobt->Move.duty_ratio;
 	float interval = pRoobt->Move.interval;
 
 	TP_QuinticPoly_t DirX_Seg[3];
 	TP_QuinticPoly_t DirY_Seg[3];
+	TP_QuinticPoly_t DirW_Seg[3];
 	TP_QuinticPoly_t DirZ_Seg[3];
 
 	TP_Init_QuinticPoly(&DirX_Seg[0], -span_x / 2, -spd_x, 0, 0, 2 * spd_x, 0, (1 - pRoobt->Move.duty_ratio) / 2, interval);
@@ -178,24 +181,30 @@ void RC_Calc_FootTraj__(RC_Robot_t *pRoobt, double phase, double *pos_x, double 
 	TP_Init_QuinticPoly(&DirZ_Seg[0], 0, 0, 0, span_z, 0, 0, (1 - pRoobt->Move.duty_ratio) / 2, interval);
 	TP_Init_QuinticPoly(&DirZ_Seg[1], span_z, 0, 0, 0, 0, 0, (1 - pRoobt->Move.duty_ratio) / 2, interval);
 	TP_Init_QuinticPoly(&DirZ_Seg[2], 0, 0, 0, 0, 0, 0, pRoobt->Move.duty_ratio, interval);
+	TP_Init_QuinticPoly(&DirW_Seg[0], -span_w / 2, -spd_w, 0, 0, 2 * spd_w, 0, (1 - pRoobt->Move.duty_ratio) / 2, interval);
+	TP_Init_QuinticPoly(&DirW_Seg[1], 0, 2 * spd_w, 0, span_w / 2, -spd_w, 0, (1 - pRoobt->Move.duty_ratio) / 2, interval);
+	TP_Init_QuinticPoly(&DirW_Seg[2], span_w / 2, -spd_w, 0, -span_w / 2, -spd_w, 0, pRoobt->Move.duty_ratio, interval);
 
 	if (0 <= phase && phase <= (1 - pRoobt->Move.duty_ratio) / 2)
 	{
 		*pos_x = TP_Calc_QuinticPoly__(&DirX_Seg[0], phase);
 		*pos_y = TP_Calc_QuinticPoly__(&DirY_Seg[0], phase);
 		*pos_z = TP_Calc_QuinticPoly__(&DirZ_Seg[0], phase);
+		*omega = TP_Calc_QuinticPoly__(&DirW_Seg[0], phase);
 	}
 	else if ((1 - pRoobt->Move.duty_ratio) / 2 < phase && phase <= 1 - pRoobt->Move.duty_ratio)
 	{
 		*pos_x = TP_Calc_QuinticPoly__(&DirX_Seg[1], phase - (1 - pRoobt->Move.duty_ratio) / 2);
 		*pos_y = TP_Calc_QuinticPoly__(&DirY_Seg[1], phase - (1 - pRoobt->Move.duty_ratio) / 2);
 		*pos_z = TP_Calc_QuinticPoly__(&DirZ_Seg[1], phase - (1 - pRoobt->Move.duty_ratio) / 2);
+		*omega = TP_Calc_QuinticPoly__(&DirW_Seg[0], phase - (1 - pRoobt->Move.duty_ratio) / 2);
 	}
 	else if (1 - pRoobt->Move.duty_ratio < phase && phase <= 1.0)
 	{
 		*pos_x = TP_Calc_QuinticPoly__(&DirX_Seg[2], phase - (1 - pRoobt->Move.duty_ratio));
 		*pos_y = TP_Calc_QuinticPoly__(&DirY_Seg[2], phase - (1 - pRoobt->Move.duty_ratio));
 		*pos_z = TP_Calc_QuinticPoly__(&DirZ_Seg[2], phase - (1 - pRoobt->Move.duty_ratio));
+		*omega = TP_Calc_QuinticPoly__(&DirW_Seg[0], phase - (1 - pRoobt->Move.duty_ratio));
 	}
 }
 
@@ -203,15 +212,12 @@ void RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_, matrix_t *m_angle)
 {
 	float span_w = pRoobt->Move.span_w;
 
-	float omega;
 	float phase[4];
 
-	double pos_x = 0, pos_y = 0, pos_z = 0;
+	double pos_x = 0, pos_y = 0, pos_z = 0, omega[4] = {0};
 	matrix_t *rz, *inv;
 
-	TP_QuinticPoly_t DirW_Seg;
-
-	if (0 <= phase_ && phase_ < 0.5)
+	/*if (0 <= phase_ && phase_ < 0.5)
 	{
 		TP_Init_QuinticPoly(&DirW_Seg, 0, 0, 0, span_w, 0, 0, 0.5, pRoobt->Move.interval);
 		omega = TP_Calc_QuinticPoly__(&DirW_Seg, phase_);
@@ -220,7 +226,7 @@ void RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_, matrix_t *m_angle)
 	{
 		TP_Init_QuinticPoly(&DirW_Seg, span_w, 0, 0, 0, 0, 0, 0.5, pRoobt->Move.interval);
 		omega = TP_Calc_QuinticPoly__(&DirW_Seg, phase_ - 0.5);
-	}
+	}*/
 
 	if (strcmp(pRoobt->Move.gait, "trot") == 0)
 	{
@@ -240,19 +246,21 @@ void RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_, matrix_t *m_angle)
 
 	for (int i = 0; i < 4; i++)
 		cmat_free(pRoobt->Mat.ZeroFrm2p[i]);
-	RC_Calc_FootTraj__(pRoobt, phase[0], &pos_x, &pos_y, &pos_z);
+	RC_Calc_FootTraj__(pRoobt, phase[0], &pos_x, &pos_y, &pos_z, &omega[0]);
 	pRoobt->Mat.ZeroFrm2p[RC_LEG_LF] = cmat_se3(pos_x, pos_y, pos_z);
-	RC_Calc_FootTraj__(pRoobt, phase[1], &pos_x, &pos_y, &pos_z);
+	RC_Calc_FootTraj__(pRoobt, phase[1], &pos_x, &pos_y, &pos_z, &omega[1]);
 	pRoobt->Mat.ZeroFrm2p[RC_LEG_LH] = cmat_se3(pos_x, pos_y, pos_z);
-	RC_Calc_FootTraj__(pRoobt, phase[2], &pos_x, &pos_y, &pos_z);
+	RC_Calc_FootTraj__(pRoobt, phase[2], &pos_x, &pos_y, &pos_z, &omega[2]);
 	pRoobt->Mat.ZeroFrm2p[RC_LEG_RF] = cmat_se3(pos_x, pos_y, pos_z);
-	RC_Calc_FootTraj__(pRoobt, phase[3], &pos_x, &pos_y, &pos_z);
+	RC_Calc_FootTraj__(pRoobt, phase[3], &pos_x, &pos_y, &pos_z, &omega[3]);
 	pRoobt->Mat.ZeroFrm2p[RC_LEG_RH] = cmat_se3(pos_x, pos_y, pos_z);
 
-	rz = cmat_se3_rz(omega);
 	for (int i = 0; i < 4; i++)
+	{
+		rz = cmat_se3_rz(omega[i]);
 		cmat_multiply_multi(pRoobt->Mat.PosFrm2p[i], 3, rz, pRoobt->Mat.PosFrm2ZeroFrm[i], pRoobt->Mat.ZeroFrm2p[i]);
-	cmat_free(rz);
+		cmat_free(rz);
+	}
 
 	for (int i = 0; i < 4; i++)
 		cmat_multiply(pRoobt->Mat.RefFrm2PosFrm, pRoobt->Mat.PosFrm2p[i], pRoobt->Mat.RefFrm2p[i]);
