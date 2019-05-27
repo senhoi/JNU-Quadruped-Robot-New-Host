@@ -70,6 +70,7 @@ void InterruptTask(void)
 
 	QuadrupedRobot.Move.span_x = RemoteData.LY_Factor * Range.span_x;
 	QuadrupedRobot.Move.span_y = RemoteData.LX_Factor * Range.span_y;
+	QuadrupedRobot.Move.span_w = RemoteData.RX_Factor * Range.span_w;
 	QuadrupedRobot.Move.span_z = RemoteData.Dial_Factor * Range.span_z;
 
 	RC_Update_BodyPose(&QuadrupedRobot, 0, 0, 400, 0, 0, 0);
