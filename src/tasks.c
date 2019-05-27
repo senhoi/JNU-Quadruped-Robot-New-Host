@@ -38,10 +38,10 @@ void InitTask(void)
 	m_pos = cmat_malloc(3, 4);
 	m_rad = cmat_malloc(3, 4);
 
-	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 70, 300, 300, 400, 600);
+	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 70, 300, 250, 400, 570);
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 1.0f, 0.01f, 0.5f,
 					0.0f, 0.0f, 100.0f, 0.0f,
-					0.0f, 0.0f, 400.0f, 0.0f, 0.0f, 0.0f,
+					0.0f, 0.0f, 450.0f, 0.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 420.0f, 600.0f, 0.0f, 0.0f);
 }
 
@@ -76,11 +76,11 @@ void InterruptTask(void)
 	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
 	RC_Calc_FootTraj(&QuadrupedRobot, Phase, m_pos);
-	cmat_display(m_pos);
+	//cmat_display(m_pos);
 	RC_InvKine(&QuadrupedRobot, m_pos, m_rad);
 	//cmat_display(m_rad);
 	RC_AngleCorrect(&QuadrupedRobot, m_rad);
-	//cmat_display(m_rad);
+	cmat_display(m_rad);
 
 	SendTask();
 }
