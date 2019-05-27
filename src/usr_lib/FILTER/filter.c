@@ -14,14 +14,14 @@
   */
 void LowPassFilter_RC_1order(float *Vi, float *Vo, float *Vo_p, float sampleFrq, float cutFrq)
 {
-	float RC, Cof1, Cof2;
+  float RC, Cof1, Cof2;
 
-	RC = (float)1.0 / 2.0 / 3.1415f / cutFrq;
-	Cof1 = 1 / (1 + RC * sampleFrq);
-	Cof2 = RC * sampleFrq / (1 + RC * sampleFrq);
+  RC = (float)1.0 / 2.0 / 3.1415f / cutFrq;
+  Cof1 = 1 / (1 + RC * sampleFrq);
+  Cof2 = RC * sampleFrq / (1 + RC * sampleFrq);
 
-	*Vo = Cof1 * (*Vi) + Cof2 * (*Vo_p);
+  *Vo = Cof1 * (*Vi) + Cof2 * (*Vo_p);
 
-	//update
-	*Vo_p = *Vo;
+  //update
+  *Vo_p = *Vo;
 }

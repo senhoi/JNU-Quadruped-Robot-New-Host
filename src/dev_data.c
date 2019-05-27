@@ -1,14 +1,6 @@
 #include "dev_data.h"
 
-//extern fl2u8 GyroscopeData[10];
-//extern u162u8 CameraData[3];
-
-Remote_t RemoteData;
-
-GyroFilter_t sGyroData_LowFreq;
-GyroFilter_t sGyroData_HighFreq;
-
-Gyro_t GyroData;
+/********************FootGrounding*******************/
 
 uint8_t FootGrounding;
 
@@ -16,6 +8,35 @@ void AnalysisFootGroundingData(serial_frame_t *pFrame)
 {
 	FootGrounding = *pFrame->pdata;
 }
+
+void DispFootGroundingData(FootStatus_t FootGrounding)
+{
+	if (FootGrounding & 0x01)
+		printf("[LF]");
+	else
+		printf(" LF ");
+
+	if (FootGrounding & 0x02)
+		printf("[RH]");
+	else
+		printf(" RH ");
+
+	if (FootGrounding & 0x04)
+		printf("[RF]");
+	else
+		printf(" RF ");
+
+	if (FootGrounding & 0x08)
+		printf("[LH]");
+	else
+		printf(" LH ");
+
+	printf("\n");
+}
+
+/********************Remote*******************/
+
+Remote_t RemoteData;
 
 void AnalysisRemoteData(serial_frame_t *pFrame)
 {
@@ -27,6 +48,26 @@ void AnalysisRemoteData(serial_frame_t *pFrame)
 	RemoteData.Coordinate = pFrame->pdata[5];
 	RemoteData.Dial = pFrame->pdata[6];
 }
+
+void DispRemoteData(void)
+{
+	printf("Remote Data:\n");
+	printf("LX:%d\t", RemoteData.Joystick_LX);
+	printf("LY:%d\t", RemoteData.Joystick_LY);
+	printf("RX:%d\t", RemoteData.Joystick_RX);
+	printf("RY:%d\t", RemoteData.Joystick_RY);
+	printf("\n");
+	printf("LS:%d\t", RemoteData.Gait);
+	printf("RS:%d\t", RemoteData.Coordinate);
+	printf("VA:%d\t", RemoteData.Dial);
+	printf("\n");
+}
+
+/********************Gyroscope*******************/
+
+Gyro_t GyroData;
+GyroFilter_t sGyroData_LowFreq;
+GyroFilter_t sGyroData_HighFreq;
 
 void AnalysisGyroData(serial_frame_t *pFrame, int filter)
 {
@@ -87,20 +128,6 @@ void GyroData_LowPassFilter(GyroFilter_t *sGyroFilter)
 	LowPassFilter_RC_1order(&sGyroFilter->FreshData.Gyro_Z, &sGyroFilter->Data.Gyro_Z, &sGyroFilter->PrevData.Gyro_Z, sGyroFilter->SampleFreq, sGyroFilter->CutFreq);
 }
 
-void DispRemoteData(void)
-{
-	printf("Remote Data:\n");
-	printf("LX:%d\t", RemoteData.Joystick_LX);
-	printf("LY:%d\t", RemoteData.Joystick_LY);
-	printf("RX:%d\t", RemoteData.Joystick_RX);
-	printf("RY:%d\t", RemoteData.Joystick_RY);
-	printf("\n");
-	printf("LS:%d\t", RemoteData.Gait);
-	printf("RS:%d\t", RemoteData.Coordinate);
-	printf("VA:%d\t", RemoteData.Dial);
-	printf("\n");
-}
-
 void DispGyroData(void)
 {
 	printf("Gyro Data:\n");
@@ -111,31 +138,6 @@ void DispGyroData(void)
 	printf("Gyro_X:%f\t", GyroData.Gyro_X);
 	printf("Gyro_Y:%f\t", GyroData.Gyro_Y);
 	printf("Gyro_Z:%f\t", GyroData.Gyro_Z);
-	printf("\n");
-}
-
-void DispFootGroundingData(FootStatus_t FootGrounding)
-{
-	if (FootGrounding & 0x01)
-		printf("[LF]");
-	else
-		printf(" LF ");
-
-	if (FootGrounding & 0x02)
-		printf("[RH]");
-	else
-		printf(" RH ");
-
-	if (FootGrounding & 0x04)
-		printf("[RF]");
-	else
-		printf(" RF ");
-
-	if (FootGrounding & 0x08)
-		printf("[LH]");
-	else
-		printf(" LH ");
-
 	printf("\n");
 }
 

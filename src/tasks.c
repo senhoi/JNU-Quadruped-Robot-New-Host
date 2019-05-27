@@ -48,9 +48,9 @@ void InterruptTask(void)
 {
 	TimerTask();
 
-	//RC_Update_BodyPose
-	//RC_Update_PosPose
-	//RC_Update_ZeroPara
+	RC_Update_ZeroPara(&QuadrupedRobot, 400, 600, 0, 0);
+	RC_Update_BodyPose(&QuadrupedRobot, 0, 0, 400, 0, 0, 0);
+	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
 	RC_Calc_FootTraj(&QuadrupedRobot, Phase, m_pos);
 	//cmat_display(m_pos);
@@ -58,7 +58,7 @@ void InterruptTask(void)
 	//cmat_display(m_rad);
 	RC_AngleCorrect(&QuadrupedRobot, m_rad);
 	cmat_display(m_rad);
-	
+
 	SendTask();
 }
 
