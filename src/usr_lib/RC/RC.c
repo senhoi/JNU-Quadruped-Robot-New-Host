@@ -311,7 +311,7 @@ void RC_InvKine(RC_Robot_t *pRoobt, matrix_t *m_pos, matrix_t *m_angle)
 			cmat_set(m_angle, 2, i, atan2(S3, C3));
 
 			rho = sqrt(pow(pRoobt->Mech.leg_a1 + pRoobt->Mech.leg_a2 * C3, 2) + pow((pRoobt->Mech.leg_a2 * S3), 2));
-			if (i <= 2)
+			if (i < 2)
 				cmat_set(m_angle, 1, i, atan2(pRoobt->Mech.leg_a1 + pRoobt->Mech.leg_a2 * C3, pRoobt->Mech.leg_a2 * S3) - atan2(sqrt(1 - pow(cmat_get(m_pos, 2, i) / rho, 2)), cmat_get(m_pos, 2, i) / rho));
 			//cmat_set(m_angle, 1, i, atan2(pRoobt->Mech.leg_a1 + pRoobt->Mech.leg_a2*C3, pRoobt->Mech.leg_a2*S3) - atan2(-sqrt(1 - pow(cmat_get(m_pos, 2, i) / rho, 2)), cmat_get(m_pos, 2, i) / rho));
 			else
