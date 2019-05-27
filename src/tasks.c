@@ -31,7 +31,7 @@ struct
 	float roll;
 	float pitch;
 	float yaw;
-} Range = {150.0f, 100.0f, 100.0f, pi / 15, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 100.0f, pi / 15, pi / 15, pi / 15};
+} Range = {150.0f, 100.0f, 100.0f, pi / 8, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 100.0f, pi / 15, pi / 15, pi / 15};
 
 void InitTask(void)
 {
@@ -70,8 +70,10 @@ void InterruptTask(void)
 
 	QuadrupedRobot.Move.span_x = RemoteData.LY_Factor * Range.span_x;
 	QuadrupedRobot.Move.span_y = RemoteData.LX_Factor * Range.span_y;
+	QuadrupedRobot.Move.span_w = RemoteData.RX_Factor * Range.span_w;
 	QuadrupedRobot.Move.span_z = RemoteData.Dial_Factor * Range.span_z;
 
+	RC_Update_ZeroPara(&QuadrupedRobot, 400, 600, RemoteData.RY_Factor * 100, 0);
 	RC_Update_BodyPose(&QuadrupedRobot, 0, 0, 400, 0, 0, 0);
 	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
