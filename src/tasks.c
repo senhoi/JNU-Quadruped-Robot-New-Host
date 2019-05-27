@@ -13,6 +13,26 @@ matrix_t *m_rad;
 
 float Phase;
 
+struct
+{
+	float span_x;
+	float span_y;
+	float span_z;
+	float span_w;
+
+	float cycle_max;
+	float cycle_min;
+	float duty_ratio_max;
+	float duty_ratio_min;
+
+	float body_x;
+	float body_y;
+	float body_z;
+	float roll;
+	float pitch;
+	float yaw;
+} Range = {150.0f, 100.0f, 100.0f, pi / 15, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 100.0f, pi / 15, pi / 15, pi / 15};
+
 void InitTask(void)
 {
 	m_pos = cmat_malloc(3, 4);
@@ -48,16 +68,19 @@ void InterruptTask(void)
 {
 	TimerTask();
 
-	RC_Update_ZeroPara(&QuadrupedRobot, 400, 600, 0, 0);
+	QuadrupedRobot.Move.span_x = RemoteData.LY_Factor * Range.span_x;
+	QuadrupedRobot.Move.span_y = RemoteData.LX_Factor * Range.span_y;
+	QuadrupedRobot.Move.span_z = RemoteData.Dial_Factor * Range.span_z;
+
 	RC_Update_BodyPose(&QuadrupedRobot, 0, 0, 400, 0, 0, 0);
 	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
 	RC_Calc_FootTraj(&QuadrupedRobot, Phase, m_pos);
-	//cmat_display(m_pos);
+	cmat_display(m_pos);
 	RC_InvKine(&QuadrupedRobot, m_pos, m_rad);
 	//cmat_display(m_rad);
 	RC_AngleCorrect(&QuadrupedRobot, m_rad);
-	cmat_display(m_rad);
+	//cmat_display(m_rad);
 
 	SendTask();
 }
@@ -65,8 +88,8 @@ void InterruptTask(void)
 void DisplayTask(void)
 {
 	DispRemoteData();
-	DispGyroData();
-	DispFootGroundingData(FootGrounding);
+	//DispGyroData();
+	//DispFootGroundingData(FootGrounding);
 }
 
 void RevTask(void)
@@ -85,7 +108,7 @@ void RevTask(void)
 			break;
 
 		case FRAMETYPE_GYROSCOPE:
-			AnalysisGyroData(&sFrame, 1);
+			AnalysisGyroData(&sFrame);
 			break;
 
 		default:

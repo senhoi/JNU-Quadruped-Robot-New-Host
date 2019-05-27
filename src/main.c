@@ -107,6 +107,8 @@ void sys_init(Sys_Interface_t interface, Sys_SynSig_t syn_sig, Sys_EnLog_t log_e
 	getchar();
 
 	InitTask();
+
+	//serialTest(setting.fd_uart, 0x55AA);
 }
 
 void sys_loop()
@@ -120,6 +122,7 @@ void sys_loop()
 		{
 			time_begin_us = sys_timer_us();
 			handle_IRQ();
+			LowPriorityTask();
 			time_end_us = sys_timer_us();
 
 			time_diff_us = time_end_us - time_begin_us;

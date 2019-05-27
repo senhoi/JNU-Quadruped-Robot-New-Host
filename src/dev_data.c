@@ -47,6 +47,12 @@ void AnalysisRemoteData(serial_frame_t *pFrame)
 	RemoteData.Gait = pFrame->pdata[4];
 	RemoteData.Coordinate = pFrame->pdata[5];
 	RemoteData.Dial = pFrame->pdata[6];
+
+	RemoteData.LX_Factor = RemoteData.Joystick_LX / 128.0f;
+	RemoteData.LY_Factor = RemoteData.Joystick_LY / 128.0f;
+	RemoteData.RX_Factor = RemoteData.Joystick_RX / 128.0f;
+	RemoteData.RY_Factor = RemoteData.Joystick_RY / 128.0f;
+	RemoteData.Dial_Factor = RemoteData.Dial / 256.0f;
 }
 
 void DispRemoteData(void)
@@ -66,13 +72,29 @@ void DispRemoteData(void)
 /********************Gyroscope*******************/
 
 Gyro_t GyroData;
-GyroFilter_t sGyroData_LowFreq;
-GyroFilter_t sGyroData_HighFreq;
 
-void AnalysisGyroData(serial_frame_t *pFrame, int filter)
+void ConfigGyroFilter(int window_size)
 {
-	void GyroData_LowPassFilter(GyroFilter_t * sGyroFilter);
+	SildingAvrgFilter_Init(GyroData.Pitch_Filter, window_size);
+	SildingAvrgFilter_Init(GyroData.Roll_Filter, window_size);
+	SildingAvrgFilter_Init(GyroData.Yaw_Filter, window_size);
+	SildingAvrgFilter_Init(GyroData.X_Filter, window_size);
+	SildingAvrgFilter_Init(GyroData.Y_Filter, window_size);
+	SildingAvrgFilter_Init(GyroData.Z_Filter, window_size);
+}
 
+void CloseGyroFilter(void)
+{
+	SildingAvrgFilter_Kill(GyroData.Pitch_Filter);
+	SildingAvrgFilter_Kill(GyroData.Roll_Filter);
+	SildingAvrgFilter_Kill(GyroData.Yaw_Filter);
+	SildingAvrgFilter_Kill(GyroData.X_Filter);
+	SildingAvrgFilter_Kill(GyroData.Y_Filter);
+	SildingAvrgFilter_Kill(GyroData.Z_Filter);
+}
+
+void AnalysisGyroData(serial_frame_t *pFrame)
+{
 	float_uint8_t gyro_temp_arr[6];
 
 	for (int i = 0; i < 6; i++)
@@ -86,46 +108,19 @@ void AnalysisGyroData(serial_frame_t *pFrame, int filter)
 	GyroData.Pitch = gyro_temp_arr[0].fl - 2.43f;
 	GyroData.Roll = gyro_temp_arr[1].fl;
 	GyroData.Yaw = gyro_temp_arr[2].fl;
-	GyroData.Gyro_X = gyro_temp_arr[3].fl;
-	GyroData.Gyro_Y = gyro_temp_arr[4].fl;
-	GyroData.Gyro_Z = gyro_temp_arr[5].fl;
+	GyroData.X = gyro_temp_arr[3].fl;
+	GyroData.Y = gyro_temp_arr[4].fl;
+	GyroData.Z = gyro_temp_arr[5].fl;
 
-	/*if (filter == 1) //使用滤波器
+	if (GyroData.en_filter == FILTER_ON) //使用滤波器
 	{
-		sGyroData_LowFreq.SampleFreq = 1000.0f / sRobot_MotionPara.Interval;
-		sGyroData_LowFreq.CutFreq = 0.05f * (1.0f / (sRobot_MotionPara.Cycle / sRobot_MotionPara.PhaseTotal));
-
-		sGyroData_LowFreq.FreshData.Pitch = GyroData.Pitch;
-		sGyroData_LowFreq.FreshData.Roll = GyroData.Roll;
-		sGyroData_LowFreq.FreshData.Yaw = GyroData.Yaw;
-		sGyroData_LowFreq.FreshData.Gyro_X = GyroData.Gyro_X;
-		sGyroData_LowFreq.FreshData.Gyro_Y = GyroData.Gyro_Y;
-		sGyroData_LowFreq.FreshData.Gyro_Z = GyroData.Gyro_Z;
-
-		GyroData_LowPassFilter(&sGyroData_LowFreq);
-
-		sGyroData_HighFreq.SampleFreq = 1000.0f / sRobot_MotionPara.Interval;
-		sGyroData_HighFreq.CutFreq = 5.0f * (1.0f / (sRobot_MotionPara.Cycle / sRobot_MotionPara.PhaseTotal));
-
-		sGyroData_HighFreq.FreshData.Pitch = GyroData.Pitch;
-		sGyroData_HighFreq.FreshData.Roll = GyroData.Roll;
-		sGyroData_HighFreq.FreshData.Yaw = GyroData.Yaw;
-		sGyroData_HighFreq.FreshData.Gyro_X = GyroData.Gyro_X;
-		sGyroData_HighFreq.FreshData.Gyro_Y = GyroData.Gyro_Y;
-		sGyroData_HighFreq.FreshData.Gyro_Z = GyroData.Gyro_Z;
-
-		GyroData_LowPassFilter(&sGyroData_HighFreq);
-	}*/
-}
-
-void GyroData_LowPassFilter(GyroFilter_t *sGyroFilter)
-{
-	LowPassFilter_RC_1order(&sGyroFilter->FreshData.Pitch, &sGyroFilter->Data.Pitch, &sGyroFilter->PrevData.Pitch, sGyroFilter->SampleFreq, sGyroFilter->CutFreq);
-	LowPassFilter_RC_1order(&sGyroFilter->FreshData.Roll, &sGyroFilter->Data.Roll, &sGyroFilter->PrevData.Roll, sGyroFilter->SampleFreq, sGyroFilter->CutFreq);
-	LowPassFilter_RC_1order(&sGyroFilter->FreshData.Yaw, &sGyroFilter->Data.Yaw, &sGyroFilter->PrevData.Yaw, sGyroFilter->SampleFreq, sGyroFilter->CutFreq);
-	LowPassFilter_RC_1order(&sGyroFilter->FreshData.Gyro_X, &sGyroFilter->Data.Gyro_X, &sGyroFilter->PrevData.Gyro_X, sGyroFilter->SampleFreq, sGyroFilter->CutFreq);
-	LowPassFilter_RC_1order(&sGyroFilter->FreshData.Gyro_Y, &sGyroFilter->Data.Gyro_Y, &sGyroFilter->PrevData.Gyro_Y, sGyroFilter->SampleFreq, sGyroFilter->CutFreq);
-	LowPassFilter_RC_1order(&sGyroFilter->FreshData.Gyro_Z, &sGyroFilter->Data.Gyro_Z, &sGyroFilter->PrevData.Gyro_Z, sGyroFilter->SampleFreq, sGyroFilter->CutFreq);
+		GyroData.Pitch_ = SildingAvrgFilter_Calc(GyroData.Pitch_Filter, GyroData.Pitch);
+		GyroData.Roll_ = SildingAvrgFilter_Calc(GyroData.Roll_Filter, GyroData.Roll);
+		GyroData.Yaw_ = SildingAvrgFilter_Calc(GyroData.Yaw_Filter, GyroData.Yaw);
+		GyroData.X_ = SildingAvrgFilter_Calc(GyroData.X_Filter, GyroData.X);
+		GyroData.Y_ = SildingAvrgFilter_Calc(GyroData.Y_Filter, GyroData.Y);
+		GyroData.Z_ = SildingAvrgFilter_Calc(GyroData.Z_Filter, GyroData.Z);
+	}
 }
 
 void DispGyroData(void)
@@ -134,15 +129,11 @@ void DispGyroData(void)
 	printf("Pitch:%f\t", GyroData.Pitch);
 	printf("Roll:%f\t", GyroData.Roll);
 	printf("Yaw:%f\t", GyroData.Yaw);
-	printf("\n");
-	printf("Gyro_X:%f\t", GyroData.Gyro_X);
-	printf("Gyro_Y:%f\t", GyroData.Gyro_Y);
-	printf("Gyro_Z:%f\t", GyroData.Gyro_Z);
+	printf("X:%f\t", GyroData.X);
+	printf("Y:%f\t", GyroData.Y);
+	printf("Z:%f\t", GyroData.Z);
 	printf("\n");
 }
-
-static FILE *fd_gyro_log;
-char GyroLogFileName[128];
 
 void CreateGyroLogFile(void)
 {
@@ -151,25 +142,41 @@ void CreateGyroLogFile(void)
 	time_t timer = time(NULL);
 
 	strftime(str_data, sizeof(str_data), "%Y-%m-%d[%H:%M:%S][GYRO]", localtime(&timer));
-	strcat(GyroLogFileName, str_data);
-	strcat(GyroLogFileName, ".txt");
-	fd_gyro_log = fopen(GyroLogFileName, "w");
+	strcat(GyroData.Log.filename, str_data);
+	strcat(GyroData.Log.filename, ".txt");
+	GyroData.Log.fd = fopen(GyroData.Log.filename, "w");
 
-	if (fd_gyro_log == NULL)
-	{
+	if (GyroData.Log.fd == NULL)
 		printf("Failed to create gyro log file.\n");
-	}
 }
 
-/*void WriteGyroLogFile(void)
+void WriteGyroLogFile(void)
 {
-	fprintf(fd_gyro_log, "%f\t%f\t%f\t%f\t%f\t%f\t%f\n", sRobot_MotionPara.Time_S + sRobot_MotionPara.Time_MS / 1000.0, GyroData.Pitch, GyroData.Roll, GyroData.Yaw, GyroData.Gyro_X, GyroData.Gyro_Y, GyroData.Gyro_Z);
-}*/
+	fprintf(GyroData.Log.fd, "%f\t%f\t%f\t%f\t%f\t%f\n",
+			GyroData.Pitch, GyroData.Roll, GyroData.Yaw,
+			GyroData.X, GyroData.Y, GyroData.Z);
+}
 
 void SaveGyroLogFile(void)
 {
-	if (!fclose(fd_gyro_log))
-	{
-		printf("Gyro log file saved. Filename is %s.\n", GyroLogFileName);
-	}
+	if (!fclose(GyroData.Log.fd))
+		printf("Gyro log file saved. Filename is %s.\n", GyroData.Log.filename);
+}
+
+void ConfigGyro(Gyro_EnFilter_t en_filter, int window_size, Gyro_EnLog_t en_log)
+{
+	GyroData.en_filter = en_filter;
+	GyroData.Log.enable = en_log;
+
+	if (GyroData.en_filter == FILTER_ON)
+		ConfigGyroFilter(window_size);
+
+	if (GyroData.Log.enable == LOG_ON)
+		CreateGyroLogFile();
+}
+
+void CloseGyro(void)
+{
+	CloseGyroFilter();
+	SaveGyroLogFile();
 }

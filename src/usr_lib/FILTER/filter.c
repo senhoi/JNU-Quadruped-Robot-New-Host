@@ -25,3 +25,19 @@ void LowPassFilter_RC_1order(float *Vi, float *Vo, float *Vo_p, float sampleFrq,
   //update
   *Vo_p = *Vo;
 }
+
+void SildingAvrgFilter_Init(queue_t *pSildingAvrgQueue, int window_size)
+{
+  pSildingAvrgQueue = queue_malloc(window_size);
+}
+
+double SildingAvrgFilter_Calc(queue_t *pSildingAvrgQueue, double new_data)
+{
+  queue_push(pSildingAvrgQueue, new_data);
+  return queue_avrg(pSildingAvrgQueue);
+}
+
+void SildingAvrgFilter_Kill(queue_t *pSildingAvrgQueue)
+{
+  queue_free(pSildingAvrgQueue);
+}

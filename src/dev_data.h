@@ -28,39 +28,71 @@ typedef struct Remote_t
 	unsigned char Dial;
 	enum Gait_t Gait;
 	enum Coordinate_t Coordinate;
+
+	float LX_Factor;
+	float LY_Factor;
+	float RX_Factor;
+	float RY_Factor;
+	float Dial_Factor;
 } Remote_t;
+
+typedef enum Gyro_EnLog_t
+{
+	LOG_OFF,
+	LOG_ON
+} Gyro_EnLog_t;
+
+typedef enum Gyro_EnFilter_t
+{
+	FILTER_OFF,
+	FILTER_ON
+} Gyro_EnFilter_t;
+
+typedef struct Gyro_Log_t
+{
+	Gyro_EnLog_t enable;
+	char filename[32];
+	FILE *fd;
+} Gyro_Log_t;
 
 typedef struct Gyro_t
 {
+	Gyro_EnFilter_t en_filter;
+
 	float Pitch;
 	float Roll;
 	float Yaw;
-	float Gyro_X;
-	float Gyro_Y;
-	float Gyro_Z;
-} Gyro_t;
+	float X;
+	float Y;
+	float Z;
 
-typedef struct GyroFilter_t
-{
-	float CutFreq;
-	float SampleFreq;
-	Gyro_t Data;
-	Gyro_t PrevData;
-	Gyro_t FreshData;
-} GyroFilter_t;
+	queue_t *Pitch_Filter;
+	queue_t *Roll_Filter;
+	queue_t *Yaw_Filter;
+	queue_t *X_Filter;
+	queue_t *Y_Filter;
+	queue_t *Z_Filter;
+
+	float Pitch_;
+	float Roll_;
+	float Yaw_;
+	float X_;
+	float Y_;
+	float Z_;
+
+	Gyro_Log_t Log;
+} Gyro_t;
 
 typedef uint8_t FootStatus_t;
 
 extern Remote_t RemoteData;
 extern Gyro_t GyroData;
-extern GyroFilter_t sGyroData_LowFreq;
-extern GyroFilter_t sGyroData_HighFreq;
 
 extern uint8_t FootGrounding;
 
 void AnalysisFootGroundingData(serial_frame_t *pFrame);
 void AnalysisRemoteData(serial_frame_t *pFrame);
-void AnalysisGyroData(serial_frame_t *pFrame, int filter);
+void AnalysisGyroData(serial_frame_t *pFrame);
 
 void DispRemoteData(void);
 void DispGyroData(void);
