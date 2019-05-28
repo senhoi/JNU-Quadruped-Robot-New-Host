@@ -31,7 +31,10 @@ struct
 	float roll;
 	float pitch;
 	float yaw;
-} Range = {150.0f, 100.0f, 100.0f, pi / 16, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 100.0f, pi / 15, pi / 15, pi / 15};
+
+	float zero_x;
+	float zero_y;
+} Range = {150.0f, 100.0f, 100.0f, pi / 16, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 100.0f, pi / 15, pi / 15, pi / 15, 100.0f, 100.0f};
 
 void InitTask(void)
 {
@@ -42,7 +45,7 @@ void InitTask(void)
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.8f, 0.01f, 0.5f,
 					0.0f, 0.0f, 100.0f, 0.0f,
 					0.0f, 0.0f, 450.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 400.0f, 600.0f, 0.0f, 0.0f);
+					0.0f, 0.0f, 400.0f, 700.0f, 30.0f, 0.0f);
 }
 
 void TimerTask(void)
@@ -68,13 +71,31 @@ void InterruptTask(void)
 {
 	TimerTask();
 
-	QuadrupedRobot.Move.span_x = RemoteData.LY_Factor * Range.span_x;
-	QuadrupedRobot.Move.span_y = RemoteData.LX_Factor * Range.span_y;
-	QuadrupedRobot.Move.span_w = RemoteData.RX_Factor * Range.span_w;
-	QuadrupedRobot.Move.span_z = RemoteData.Dial_Factor * Range.span_z;
+	switch(RemoteData.Gait)
+	{
+		case 0:
+		printf("Gait:0\n");
+		QuadrupedRobot.Move.span_x = RemoteData.LY_Factor * Range.span_x;
+		QuadrupedRobot.Move.span_y = RemoteData.LX_Factor * Range.span_y;
+		QuadrupedRobot.Move.span_w = RemoteData.RX_Factor * Range.span_w;
+		QuadrupedRobot.Move.span_z = RemoteData.Dial_Factor * Range.span_z;
+		break;
+		case 1:
+		printf("Gait:1\n");
+		QuadrupedRobot.Pose.body_x = RemoteData.LY_Factor * Range.body_x;
+		QuadrupedRobot.Pose.body_y = RemoteData.LX_Factor * Range.body_y;
+		QuadrupedRobot.Pose.body_ya = RemoteData.RX_Factor * Range.yaw;
+		QuadrupedRobot.Pose.body_pi = RemoteData.RY_Factor * Range.pitch;
+		QuadrupedRobot.Pose.body_z = 350 + RemoteData.Dial_Factor * Range.body_z;
+		break;
+		case 2:
+		QuadrupedRobot.Zero.centre_x = RemoteData.RY_Factor * Range.zero_x;
+		QuadrupedRobot.Zero.centre_y = RemoteData.RX_Factor * Range.zero_y;
+		break;
+	}
 
-	RC_Update_ZeroPara(&QuadrupedRobot, 400, 600, RemoteData.RY_Factor * 100, 0);
-	RC_Update_BodyPose(&QuadrupedRobot, 0, 0, 400, 0, 0, 0);
+	RC_Update_ZeroPara(&QuadrupedRobot, 400, 700, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
+	RC_Update_BodyPose(&QuadrupedRobot, QuadrupedRobot.Pose.body_x, QuadrupedRobot.Pose.body_y, QuadrupedRobot.Pose.body_z, 0, QuadrupedRobot.Pose.body_pi, QuadrupedRobot.Pose.body_ya);
 	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
 	RC_Calc_FootTraj(&QuadrupedRobot, Phase, m_pos);
@@ -89,8 +110,8 @@ void InterruptTask(void)
 
 void DisplayTask(void)
 {
-	DispRemoteData();
-	//DispGyroData();
+	//DispRemoteData();
+	DispGyroData();
 	//DispFootGroundingData(FootGrounding);
 }
 
