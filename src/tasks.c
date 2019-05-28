@@ -31,7 +31,7 @@ struct
 	float roll;
 	float pitch;
 	float yaw;
-} Range = {150.0f, 100.0f, 100.0f, pi / 8, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 100.0f, pi / 15, pi / 15, pi / 15};
+} Range = {150.0f, 100.0f, 100.0f, pi / 16, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 100.0f, pi / 15, pi / 15, pi / 15};
 
 void InitTask(void)
 {
