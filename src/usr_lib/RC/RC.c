@@ -181,7 +181,7 @@ void RC_Calc_FootTraj__(RC_Robot_t *pRoobt, double phase, double *pos_x, double 
 	TP_Init_QuinticPoly(&DirZ_Seg[0], 0, 0, 0, span_z, 0, 0, (1 - pRoobt->Move.duty_ratio) / 2, interval);
 	TP_Init_QuinticPoly(&DirZ_Seg[1], span_z, 0, 0, 0, 0, 0, (1 - pRoobt->Move.duty_ratio) / 2, interval);
 	TP_Init_QuinticPoly(&DirZ_Seg[2], 0, 0, 0, 0, 0, 0, pRoobt->Move.duty_ratio, interval);
-	TP_Init_QuinticPoly(&DirW_Seg[0], -span_w / 2, -spd_w, 0, 0, 2 * spd_w, 0, (1 - pRoobt->Move.duty_ratio) / 2, interval);
+	TP_Init_QuinticPoly(&DirW_Seg[0], -span_w / 2, -spd_w, 0, span_w / 2, -spd_w, 0, (1 - pRoobt->Move.duty_ratio) / 2, interval);
 	TP_Init_QuinticPoly(&DirW_Seg[1], 0, 2 * spd_w, 0, span_w / 2, -spd_w, 0, (1 - pRoobt->Move.duty_ratio) / 2, interval);
 	TP_Init_QuinticPoly(&DirW_Seg[2], span_w / 2, -spd_w, 0, -span_w / 2, -spd_w, 0, pRoobt->Move.duty_ratio, interval);
 
@@ -197,14 +197,14 @@ void RC_Calc_FootTraj__(RC_Robot_t *pRoobt, double phase, double *pos_x, double 
 		*pos_x = TP_Calc_QuinticPoly__(&DirX_Seg[1], phase - (1 - pRoobt->Move.duty_ratio) / 2);
 		*pos_y = TP_Calc_QuinticPoly__(&DirY_Seg[1], phase - (1 - pRoobt->Move.duty_ratio) / 2);
 		*pos_z = TP_Calc_QuinticPoly__(&DirZ_Seg[1], phase - (1 - pRoobt->Move.duty_ratio) / 2);
-		*omega = TP_Calc_QuinticPoly__(&DirW_Seg[0], phase - (1 - pRoobt->Move.duty_ratio) / 2);
+		*omega = TP_Calc_QuinticPoly__(&DirW_Seg[1], phase - (1 - pRoobt->Move.duty_ratio) / 2);
 	}
 	else if (1 - pRoobt->Move.duty_ratio < phase && phase <= 1.0)
 	{
 		*pos_x = TP_Calc_QuinticPoly__(&DirX_Seg[2], phase - (1 - pRoobt->Move.duty_ratio));
 		*pos_y = TP_Calc_QuinticPoly__(&DirY_Seg[2], phase - (1 - pRoobt->Move.duty_ratio));
 		*pos_z = TP_Calc_QuinticPoly__(&DirZ_Seg[2], phase - (1 - pRoobt->Move.duty_ratio));
-		*omega = TP_Calc_QuinticPoly__(&DirW_Seg[0], phase - (1 - pRoobt->Move.duty_ratio));
+		*omega = TP_Calc_QuinticPoly__(&DirW_Seg[2], phase - (1 - pRoobt->Move.duty_ratio));
 	}
 }
 
