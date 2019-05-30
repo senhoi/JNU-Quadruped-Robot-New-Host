@@ -45,7 +45,7 @@ void InitTask(void)
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.8f, 0.01f, 0.5f,
 					0.0f, 0.0f, 100.0f, 0.0f,
 					0.0f, 0.0f, 450.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 400.0f, 700.0f, 30.0f, 0.0f);
+					0.0f, 0.0f, 400.0f, 570.0f, 0.0f, 0.0f);
 }
 
 void TimerTask(void)
@@ -71,16 +71,16 @@ void InterruptTask(void)
 {
 	TimerTask();
 
-	switch(RemoteData.Gait)
+	switch (RemoteData.Gait)
 	{
-		case 0:
+	case 0:
 		printf("Gait:0\n");
 		QuadrupedRobot.Move.span_x = RemoteData.LY_Factor * Range.span_x;
 		QuadrupedRobot.Move.span_y = RemoteData.LX_Factor * Range.span_y;
 		QuadrupedRobot.Move.span_w = RemoteData.RX_Factor * Range.span_w;
 		QuadrupedRobot.Move.span_z = RemoteData.Dial_Factor * Range.span_z;
 		break;
-		case 1:
+	case 1:
 		printf("Gait:1\n");
 		QuadrupedRobot.Pose.body_x = RemoteData.LY_Factor * Range.body_x;
 		QuadrupedRobot.Pose.body_y = RemoteData.LX_Factor * Range.body_y;
@@ -88,7 +88,7 @@ void InterruptTask(void)
 		QuadrupedRobot.Pose.body_pi = RemoteData.RY_Factor * Range.pitch;
 		QuadrupedRobot.Pose.body_z = 350 + RemoteData.Dial_Factor * Range.body_z;
 		break;
-		case 2:
+	case 2:
 		QuadrupedRobot.Zero.centre_x = RemoteData.RY_Factor * Range.zero_x;
 		QuadrupedRobot.Zero.centre_y = RemoteData.RX_Factor * Range.zero_y;
 		break;
