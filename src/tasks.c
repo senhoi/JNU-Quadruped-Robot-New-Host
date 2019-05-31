@@ -41,11 +41,11 @@ void InitTask(void)
 	m_pos = cmat_malloc(3, 4);
 	m_rad = cmat_malloc(3, 4);
 
-	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 70, 300, 250, 260, 570);
+	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 72, 300, 250, 150, 570);
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.8f, 0.01f, 0.5f,
 					0.0f, 0.0f, 100.0f, 0.0f,
-					0.0f, 0.0f, 450.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 400.0f, 570.0f, 0.0f, 0.0f);
+					0.0f, 0.0f, 400.0f, 0.0f, 0.0f, 0.0f,
+					0.0f, 0.0f, 294.0f, 570.0f, 0.0f, 0.0f);
 }
 
 void TimerTask(void)
@@ -94,7 +94,7 @@ void InterruptTask(void)
 		break;
 	}
 
-	RC_Update_ZeroPara(&QuadrupedRobot, 400, 700, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
+	RC_Update_ZeroPara(&QuadrupedRobot, 294, 700, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
 	RC_Update_BodyPose(&QuadrupedRobot, QuadrupedRobot.Pose.body_x, QuadrupedRobot.Pose.body_y, QuadrupedRobot.Pose.body_z, 0, QuadrupedRobot.Pose.body_pi, QuadrupedRobot.Pose.body_ya);
 	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
