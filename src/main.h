@@ -10,6 +10,7 @@
 #include <signal.h>
 
 #include "tasks.h"
+#include "dev/gyro.h"
 
 #define PRINTF_ERROR(contents, args...) \
 	{                                   \
