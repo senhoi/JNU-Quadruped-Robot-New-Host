@@ -74,10 +74,14 @@ typedef struct GYRO_t
 	GYRO_Magne_t Magne;
 } GYRO_t;
 
+#define GYRO_NODATA -2
+#define GYRO_OVERTIME -1
 #define GYRO_ERROR 0
-#define GYRO_DONE 1
-#define GYRO_OVERTIME 2
-#define GYRO_NODATA 3
+#define GYRO_REV_TIME 1
+#define GYRO_REV_ACC 2
+#define GYRO_REV_ANGVEL 3
+#define GYRO_REV_ANGLE 4
+#define GYRO_REV_MANGE 5
 
 void GYRO_Init(GYRO_t *gyro, int baud);
 int GYRO_Read(GYRO_t *gyro);

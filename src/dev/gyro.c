@@ -2,13 +2,13 @@
 
 void GYRO_Init(GYRO_t *gyro, int baud)
 {
-	gyro->fd = serialOpen("/dev/ttyUSB0", baud);
+	gyro->fd = serialOpen("/dev/ttyUSB1", baud);
 
 	if (gyro->fd == -1)
-		perror("Failed to open /dev/ttyUSB0.\n");
+		perror("Failed to open /dev/ttyUSB1.\n");
 	else
 	{
-		printf("Success to open /dev/ttyUSB0.\n");
+		printf("Success to open /dev/ttyUSB1.\n");
 		printf("Baud rate: %d.\tFile descriptor: %d.\n", baud, gyro->fd);
 		getchar();
 	}
@@ -89,7 +89,19 @@ int GYRO_Read(GYRO_t *gyro)
 						}
 						if (serialDataAvail(gyro->fd) >= 256)
 							serialFlush(gyro->fd);
-						return GYRO_DONE;
+						switch (byte)
+						{
+						case Time:
+							return GYRO_REV_TIME;
+						case Acc:
+							return GYRO_REV_ACC;
+						case AngVel:
+							return GYRO_REV_ANGVEL;
+						case Angle:
+							return GYRO_REV_ANGLE;
+						case Magne:
+							return GYRO_REV_MANGE;
+						}
 						break;
 					}
 					else

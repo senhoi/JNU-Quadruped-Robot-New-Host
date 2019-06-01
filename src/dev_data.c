@@ -71,7 +71,7 @@ void DispRemoteData(void)
 
 /********************Gyroscope*******************/
 
-Gyro_t GyroData;
+/*Gyro_t GyroData;
 
 void ConfigGyroFilter(int window_size)
 {
@@ -133,8 +133,54 @@ void DispGyroData(void)
 	printf("Y:%f\t", GyroData.Y);
 	printf("Z:%f\t", GyroData.Z);
 	printf("\n");
+}*/
+
+GYRO_t WT901C;
+
+queue_t *Window_yaw;
+queue_t *Window_pitch;
+queue_t *Window_roll;
+
+void InitGyro(void)
+{
+	GYRO_Init(&WT901C, 115200);
+
+	Window_yaw = SildingAvrgFilter_Init(100);
+	Window_pitch = SildingAvrgFilter_Init(100);
+	Window_roll = SildingAvrgFilter_Init(100);
 }
 
+float Filter_RPY[3];
+
+void ReadGyro_RPY(void)
+{
+	if (GYRO_Read(&WT901C) == GYRO_REV_ANGLE)
+	{
+		Filter_RPY[0] = SildingAvrgFilter_Calc(Window_roll, WT901C.Angle.roll);
+		Filter_RPY[1] = SildingAvrgFilter_Calc(Window_pitch, WT901C.Angle.pitch);
+		Filter_RPY[2] = SildingAvrgFilter_Calc(Window_yaw, WT901C.Angle.yaw);
+
+		//printf("Y:\t%f\t%f\n", WT901C.Angle.yaw, SildingAvrgFilter_Calc(Window_yaw, WT901C.Angle.yaw));
+		//printf("P:\t%f\t%f\n", WT901C.Angle.pitch, SildingAvrgFilter_Calc(Window_pitch, WT901C.Angle.pitch));
+		//printf("R:\t%f\t%f\n", WT901C.Angle.roll, SildingAvrgFilter_Calc(Window_roll, WT901C.Angle.roll));
+	}
+}
+
+float GetGyro_FilterRoll(void)
+{
+	return Filter_RPY[0];
+}
+
+float GetGyro_FilterPitch(void)
+{
+	return Filter_RPY[1];
+}
+
+float GetGyro_FilterYaw(void)
+{
+	return Filter_RPY[2];
+}
+/*
 void CreateGyroLogFile(void)
 {
 	char str_data[64];
@@ -180,3 +226,4 @@ void CloseGyro(void)
 	CloseGyroFilter();
 	SaveGyroLogFile();
 }
+*/

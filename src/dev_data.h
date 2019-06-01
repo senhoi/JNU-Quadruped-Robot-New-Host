@@ -3,6 +3,7 @@
 
 #include "time.h"
 #include "dev/uart.h"
+#include "dev/gyro.h"
 #include "usr_lib/FILTER/filter.h"
 
 enum Gait_t
@@ -101,5 +102,12 @@ void DispFootGroundingData(FootStatus_t FootGrounding);
 void CreateGyroLogFile(void);
 void WriteGyroLogFile(void);
 void SaveGyroLogFile(void);
+
+void InitGyro(void);
+void ReadGyro_RPY(void);
+
+float GetGyro_FilterRoll(void);
+float GetGyro_FilterPitch(void);
+float GetGyro_FilterYaw(void);
 
 #endif

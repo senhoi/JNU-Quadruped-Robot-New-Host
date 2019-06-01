@@ -35,7 +35,7 @@ double queue_avrg(queue_t *q)
 
 	for (int i = 0; i < q->len; i++)
 		sum = sum + *(q->head + i);
-	printf("Sum:%lf\n", sum);
+	//printf("Sum:%lf\n", sum);
 	return sum / q->len;
 }
 

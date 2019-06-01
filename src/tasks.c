@@ -13,6 +13,8 @@ matrix_t *m_rad;
 
 float Phase;
 
+PID_Regular_t PID_yaw;
+float Locked_yaw;
 struct
 {
 	float span_x;
@@ -34,18 +36,21 @@ struct
 
 	float zero_x;
 	float zero_y;
-} Range = {150.0f, 100.0f, 100.0f, pi / 16, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 100.0f, pi / 15, pi / 15, pi / 15, 100.0f, 100.0f};
+} Range = {250.0f, 150.0f, 100.0f, pi / 12, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 100.0f, pi / 15, pi / 15, pi / 15, 100.0f, 100.0f};
 
 void InitTask(void)
 {
 	m_pos = cmat_malloc(3, 4);
 	m_rad = cmat_malloc(3, 4);
 
-	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 72, 300, 250, 150, 570);
+	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 72, 300, 250, 150, 500);
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.8f, 0.01f, 0.5f,
 					0.0f, 0.0f, 100.0f, 0.0f,
 					0.0f, 0.0f, 400.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 294.0f, 570.0f, 0.0f, 0.0f);
+					0.0f, 0.0f, 254.0f, 570.0f, 0.0f, 0.0f);
+	InitGyro();
+
+	PID_Regular_Reset(&PID_yaw, 0.01f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void TimerTask(void)
@@ -67,21 +72,56 @@ void SendTask(void)
 	serialSendFloatArr(setting.fd_uart, 12, send_buffer, 1);
 }
 
+void YawLockedTask(void)
+{
+	static int prev_remote_rs;
+
+	if (prev_remote_rs == 0 && RemoteData.Coordinate == 1)
+	{
+		printf("AutoYaw\n");
+
+		Locked_yaw = GetGyro_FilterYaw();
+
+		PID_yaw.Ref = Locked_yaw;
+	}
+
+	PID_yaw.Feedback = GetGyro_FilterYaw();
+
+	PID_Regular_Cacl(&PID_yaw);
+
+	prev_remote_rs = RemoteData.Coordinate;
+}
+
 void InterruptTask(void)
 {
 	TimerTask();
 
+	YawLockedTask();
+
 	switch (RemoteData.Gait)
 	{
 	case 0:
-		printf("Gait:0\n");
+		//printf("Gait:0\n");
 		QuadrupedRobot.Move.span_x = RemoteData.LY_Factor * Range.span_x;
 		QuadrupedRobot.Move.span_y = RemoteData.LX_Factor * Range.span_y;
-		QuadrupedRobot.Move.span_w = RemoteData.RX_Factor * Range.span_w;
+		switch (RemoteData.Coordinate)
+		{
+		case 0:
+			QuadrupedRobot.Move.span_w = RemoteData.RX_Factor * Range.span_w;
+			break;
+
+		case 1:
+			QuadrupedRobot.Move.span_w = PID_yaw.Output * Range.span_w;
+			break;
+
+		default:
+			break;
+		}
+
 		QuadrupedRobot.Move.span_z = RemoteData.Dial_Factor * Range.span_z;
 		break;
 	case 1:
-		printf("Gait:1\n");
+		//printf("Gait:1\n");
 		QuadrupedRobot.Pose.body_x = RemoteData.LY_Factor * Range.body_x;
 		QuadrupedRobot.Pose.body_y = RemoteData.LX_Factor * Range.body_y;
 		QuadrupedRobot.Pose.body_ya = RemoteData.RX_Factor * Range.yaw;
@@ -94,14 +134,14 @@ void InterruptTask(void)
 		break;
 	}
 
-	RC_Update_ZeroPara(&QuadrupedRobot, 294, 700, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
+	RC_Update_ZeroPara(&QuadrupedRobot, 254, 570, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
 	RC_Update_BodyPose(&QuadrupedRobot, QuadrupedRobot.Pose.body_x, QuadrupedRobot.Pose.body_y, QuadrupedRobot.Pose.body_z, 0, QuadrupedRobot.Pose.body_pi, QuadrupedRobot.Pose.body_ya);
 	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
 	RC_Calc_FootTraj(&QuadrupedRobot, Phase, m_pos);
 	//cmat_display(m_pos);
 	RC_InvKine(&QuadrupedRobot, m_pos, m_rad);
-	cmat_display(m_rad);
+	//cmat_display(m_rad);
 	RC_AngleCorrect(&QuadrupedRobot, m_rad);
 	//cmat_display(m_rad);
 
@@ -111,7 +151,7 @@ void InterruptTask(void)
 void DisplayTask(void)
 {
 	//DispRemoteData();
-	DispGyroData();
+	//DispGyroData();
 	//DispFootGroundingData(FootGrounding);
 }
 
@@ -131,7 +171,7 @@ void RevTask(void)
 			break;
 
 		case FRAMETYPE_GYROSCOPE:
-			AnalysisGyroData(&sFrame);
+			//AnalysisGyroData(&sFrame);
 			break;
 
 		default:
@@ -140,6 +180,7 @@ void RevTask(void)
 		}
 		free(sFrame.pdata);
 	}
+	ReadGyro_RPY();
 }
 
 void LowPriorityTask(void)

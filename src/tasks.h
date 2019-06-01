@@ -8,6 +8,7 @@
 #include "dev/uart.h"
 #include "dev/priority.h"
 #include "usr_lib/RC/RC.h"
+#include "usr_lib/PID/pid.h"
 
 void InitTask(void);
 void InterruptTask(void);
