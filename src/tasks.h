@@ -9,6 +9,7 @@
 #include "dev/priority.h"
 #include "usr_lib/RC/RC.h"
 #include "usr_lib/PID/pid.h"
+#include "usr_lib/RC/RC_ext.h"
 
 void InitTask(void);
 void InterruptTask(void);

@@ -43,12 +43,12 @@ void InitTask(void)
 	m_pos = cmat_malloc(3, 4);
 	m_rad = cmat_malloc(3, 4);
 
-	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 72, 300, 250, 150, 500);
+	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 72, 300, 230, 150, 500);
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.7f, 0.01f, 0.55f,
 					0.0f, 0.0f, 100.0f, 0.0f,
 					0.0f, 0.0f, 425.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 294.0f, 570.0f, 0.0f, 0.0f);
-	InitGyro();
+					0.0f, 0.0f, 294.0f, 500.0f, 0.0f, 0.0f);
+	//InitGyro();
 
 	PID_Regular_Reset(&PID_yaw, 0.02f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 }
@@ -88,8 +88,8 @@ void YawLockedTask(void)
 	}
 
 	PID_yaw.Feedback = GetGyro_FilterYaw();
-	
-	printf("Yaw -ref:%f -fdb:%f\n",PID_yaw.Ref,PID_yaw.Feedback);
+
+	printf("Yaw -ref:%f -fdb:%f\n", PID_yaw.Ref, PID_yaw.Feedback);
 
 	PID_Regular_Cacl(&PID_yaw);
 
@@ -101,12 +101,12 @@ void InterruptTask(void)
 	static int prev_remote_ls = 0;
 	static int locked_body_z = 350;
 
-	if(prev_remote_ls != RemoteData.Gait)
+	if (prev_remote_ls != RemoteData.Gait)
 		locked_body_z = QuadrupedRobot.Pose.body_z;
 
 	TimerTask();
 
-	YawLockedTask();
+	//YawLockedTask();
 
 	switch (RemoteData.Gait)
 	{
@@ -129,6 +129,11 @@ void InterruptTask(void)
 		}
 
 		QuadrupedRobot.Move.span_z = RemoteData.Dial_Factor * Range.span_z;
+
+		RC_ThreeDivided_Optimization(&QuadrupedRobot);
+
+		printf("Centre_x:%f\n", QuadrupedRobot.Zero.centre_x);
+
 		break;
 	case 1:
 		//printf("Gait:1\n");
@@ -137,9 +142,9 @@ void InterruptTask(void)
 		QuadrupedRobot.Pose.body_ya = RemoteData.RX_Factor * Range.yaw;
 		QuadrupedRobot.Pose.body_pi = RemoteData.RY_Factor * Range.pitch;
 		QuadrupedRobot.Pose.body_z = locked_body_z + (RemoteData.Dial_Factor - 0.5) * Range.body_z;
-		if(QuadrupedRobot.Pose.body_z > 500.0f)
+		if (QuadrupedRobot.Pose.body_z > 500.0f)
 			QuadrupedRobot.Pose.body_z = 500.0f;
-		else if(QuadrupedRobot.Pose.body_z < 350.0f)
+		else if (QuadrupedRobot.Pose.body_z < 350.0f)
 			QuadrupedRobot.Pose.body_z = 350.0f;
 		break;
 	case 2:
@@ -148,7 +153,7 @@ void InterruptTask(void)
 		break;
 	}
 
-	RC_Update_ZeroPara(&QuadrupedRobot, 294, 570, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
+	RC_Update_ZeroPara(&QuadrupedRobot, 294, 500, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
 	RC_Update_BodyPose(&QuadrupedRobot, QuadrupedRobot.Pose.body_x, QuadrupedRobot.Pose.body_y, QuadrupedRobot.Pose.body_z, 0, QuadrupedRobot.Pose.body_pi, QuadrupedRobot.Pose.body_ya);
 	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
