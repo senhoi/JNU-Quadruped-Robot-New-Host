@@ -95,6 +95,7 @@ void sys_init(Sys_Interface_t interface, Sys_SynSig_t syn_sig, Sys_EnLog_t log_e
 	}
 
 	signal(SIGINT, sys_exit);
+
 	if (setProgPri(100) != 0)
 	{
 		PRINTF_WARNING("Set priority unsuccessfully.");
@@ -122,13 +123,20 @@ void sys_loop()
 		{
 			time_begin_us = sys_timer_us();
 			handle_IRQ();
-			LowPriorityTask();
 			time_end_us = sys_timer_us();
 
 			time_diff_us = time_end_us - time_begin_us;
 
 			if (time_diff_us < CALC_CYCLE_US)
-				usleep(CALC_CYCLE_US - time_diff_us);
+			{
+				time_begin_us = sys_timer_us();
+				while (time_end_us - time_begin_us < CALC_CYCLE_US - time_diff_us)
+				{
+					LowPriorityTask();
+					time_end_us = sys_timer_us();
+				}
+			}
+			//usleep(CALC_CYCLE_US - time_diff_us);
 			else
 				PRINTF_WARNING("Execute Overtime, -beyond_us:\t%ld", time_diff_us);
 		}

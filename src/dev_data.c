@@ -227,3 +227,9 @@ void CloseGyro(void)
 	SaveGyroLogFile();
 }
 */
+
+void DevInit(void)
+{
+	//InitGyro();
+	//InitXbox();
+}

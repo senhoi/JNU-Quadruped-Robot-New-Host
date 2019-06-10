@@ -36,19 +36,22 @@ struct
 
 	float zero_x;
 	float zero_y;
-} Range = {250.0f, 150.0f, 100.0f, pi / 12, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 150.0f, pi / 15, pi / 15, pi / 15, 100.0f, 100.0f};
+} Range = {200.0f, 100.0f, 100.0f, pi / 12, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 150.0f, pi / 15, pi / 15, pi / 15, 100.0f, 100.0f};
+
+XBOX_t Xbox;
 
 void InitTask(void)
 {
+	XBOX_Init(&Xbox);
+
 	m_pos = cmat_malloc(3, 4);
 	m_rad = cmat_malloc(3, 4);
 
 	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 72, 300, 230, 150, 500);
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.7f, 0.01f, 0.55f,
-					0.0f, 0.0f, 100.0f, 0.0f,
+					0.0f, 0.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 425.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 294.0f, 500.0f, 0.0f, 0.0f);
-	//InitGyro();
+					0.0f, 0.0f, 294.0f, 480.0f, 0.0f, 0.0f);
 
 	PID_Regular_Reset(&PID_yaw, 0.02f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 }
@@ -96,6 +99,56 @@ void YawLockedTask(void)
 	prev_remote_rs = RemoteData.Coordinate;
 }
 
+void KeyPressTask(void)
+{
+	static int mode = 0;
+
+	XBOX_Edge(&Xbox);
+	XBOX_DispAll(&Xbox);
+
+	if (Xbox.xx_edge == -1)
+		QuadrupedRobot.Pose.body_z += 10;
+	if (Xbox.xx_edge == 1)
+		QuadrupedRobot.Pose.body_z -= 10;
+	if (Xbox.yy_edge == -1)
+		QuadrupedRobot.Move.span_z += 10;
+	if (Xbox.yy_edge == 1)
+		QuadrupedRobot.Move.span_z -= 10;
+
+	if (QuadrupedRobot.Move.span_z > Range.span_z)
+		QuadrupedRobot.Move.span_z = Range.span_z;
+	if (QuadrupedRobot.Move.span_z < 0)
+		QuadrupedRobot.Move.span_z = 0;
+
+	if (Xbox.a_edge == 1)
+		mode = 0;
+	if (Xbox.b_edge == 1)
+		mode = 1;
+
+	switch (mode)
+	{
+	case 0:
+		QuadrupedRobot.Move.span_x = -Xbox.ly_f * Range.span_x;
+		QuadrupedRobot.Move.span_y = -Xbox.lx_f * Range.span_y;
+		QuadrupedRobot.Move.span_w = (Xbox.lt_f - Xbox.rt_f) * Range.span_w;
+		RC_ThreeDivided_Optimization(&QuadrupedRobot);
+		break;
+	case 1:
+		QuadrupedRobot.Move.span_x = 0;
+		QuadrupedRobot.Move.span_y = 0;
+		QuadrupedRobot.Move.span_z = 0;
+
+		QuadrupedRobot.Pose.body_x = Xbox.ly_f * Range.body_x;
+		QuadrupedRobot.Pose.body_y = Xbox.lx_f * Range.body_y;
+		QuadrupedRobot.Pose.body_ya = Xbox.rx_f * Range.yaw;
+		QuadrupedRobot.Pose.body_pi = Xbox.ry_f * Range.pitch;
+		break;
+
+	default:
+		break;
+	}
+}
+
 void InterruptTask(void)
 {
 	static int prev_remote_ls = 0;
@@ -108,52 +161,9 @@ void InterruptTask(void)
 
 	//YawLockedTask();
 
-	switch (RemoteData.Gait)
-	{
-	case 0:
-		//printf("Gait:0\n");
-		QuadrupedRobot.Move.span_x = RemoteData.LY_Factor * Range.span_x;
-		QuadrupedRobot.Move.span_y = -RemoteData.LX_Factor * Range.span_y;
-		switch (RemoteData.Coordinate)
-		{
-		case 0:
-			QuadrupedRobot.Move.span_w = RemoteData.RX_Factor * Range.span_w;
-			break;
+	KeyPressTask();
 
-		case 1:
-			QuadrupedRobot.Move.span_w = -PID_yaw.Output * Range.span_w;
-			break;
-
-		default:
-			break;
-		}
-
-		QuadrupedRobot.Move.span_z = RemoteData.Dial_Factor * Range.span_z;
-
-		RC_ThreeDivided_Optimization(&QuadrupedRobot);
-
-		printf("Centre_x:%f\n", QuadrupedRobot.Zero.centre_x);
-
-		break;
-	case 1:
-		//printf("Gait:1\n");
-		QuadrupedRobot.Pose.body_x = RemoteData.LY_Factor * Range.body_x;
-		QuadrupedRobot.Pose.body_y = RemoteData.LX_Factor * Range.body_y;
-		QuadrupedRobot.Pose.body_ya = RemoteData.RX_Factor * Range.yaw;
-		QuadrupedRobot.Pose.body_pi = RemoteData.RY_Factor * Range.pitch;
-		QuadrupedRobot.Pose.body_z = locked_body_z + (RemoteData.Dial_Factor - 0.5) * Range.body_z;
-		if (QuadrupedRobot.Pose.body_z > 500.0f)
-			QuadrupedRobot.Pose.body_z = 500.0f;
-		else if (QuadrupedRobot.Pose.body_z < 350.0f)
-			QuadrupedRobot.Pose.body_z = 350.0f;
-		break;
-	case 2:
-		QuadrupedRobot.Zero.centre_x = RemoteData.RY_Factor * Range.zero_x;
-		QuadrupedRobot.Zero.centre_y = RemoteData.RX_Factor * Range.zero_y;
-		break;
-	}
-
-	RC_Update_ZeroPara(&QuadrupedRobot, 294, 500, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
+	RC_Update_ZeroPara(&QuadrupedRobot, QuadrupedRobot.Zero.width, QuadrupedRobot.Zero.length, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
 	RC_Update_BodyPose(&QuadrupedRobot, QuadrupedRobot.Pose.body_x, QuadrupedRobot.Pose.body_y, QuadrupedRobot.Pose.body_z, 0, QuadrupedRobot.Pose.body_pi, QuadrupedRobot.Pose.body_ya);
 	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
@@ -206,6 +216,8 @@ void RevTask(void)
 
 void LowPriorityTask(void)
 {
+	XBOX_Read(&Xbox);
+	XBOX_Normal(&Xbox);
 	//DisplayTask();
-	RevTask();
+	//RevTask();
 }

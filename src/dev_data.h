@@ -4,6 +4,7 @@
 #include "time.h"
 #include "dev/uart.h"
 #include "dev/gyro.h"
+#include "dev/xbox.h"
 #include "usr_lib/FILTER/filter.h"
 
 enum Gait_t
@@ -109,5 +110,7 @@ void ReadGyro_RPY(void);
 float GetGyro_FilterRoll(void);
 float GetGyro_FilterPitch(void);
 float GetGyro_FilterYaw(void);
+
+void DevInit(void);
 
 #endif
