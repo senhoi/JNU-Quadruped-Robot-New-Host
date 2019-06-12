@@ -39,10 +39,15 @@ struct
 } Range = {200.0f, 100.0f, 100.0f, pi / 12, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 150.0f, pi / 15, pi / 15, pi / 15, 100.0f, 100.0f};
 
 XBOX_t Xbox;
+GYRO_t Gyro;
 
 void InitTask(void)
 {
 	XBOX_Init(&Xbox);
+	GYRO_Init(&Gyro, 115200);
+	GYRO_ConfigLog(&Gyro, GYRO_LOG_ENABLE, GYRO_LOG_ACC | GYRO_LOG_ACC_FT | GYRO_LOG_ANGLE | GYRO_LOG_ANGLE_FT);
+	GYRO_ConfigFilt(&Gyro, GYRO_DATATYPE_ACC, 0x07, 100);
+	GYRO_ConfigFilt(&Gyro, GYRO_DATATYPE_ANGLE, 0x07, 100);
 
 	m_pos = cmat_malloc(3, 4);
 	m_rad = cmat_malloc(3, 4);
@@ -75,7 +80,7 @@ void SendTask(void)
 	serialSendFloatArr(setting.fd_uart, 12, send_buffer, 1);
 }
 
-void YawLockedTask(void)
+/* void YawLockedTask(void)
 {
 	static int prev_remote_rs;
 
@@ -97,7 +102,7 @@ void YawLockedTask(void)
 	PID_Regular_Cacl(&PID_yaw);
 
 	prev_remote_rs = RemoteData.Coordinate;
-}
+}*/
 
 void KeyPressTask(void)
 {
@@ -154,8 +159,8 @@ void InterruptTask(void)
 	static int prev_remote_ls = 0;
 	static int locked_body_z = 350;
 
-	if (prev_remote_ls != RemoteData.Gait)
-		locked_body_z = QuadrupedRobot.Pose.body_z;
+	//if (prev_remote_ls != RemoteData.Gait)
+	//	locked_body_z = QuadrupedRobot.Pose.body_z;
 
 	TimerTask();
 
@@ -174,7 +179,7 @@ void InterruptTask(void)
 	RC_AngleCorrect(&QuadrupedRobot, m_rad);
 	//cmat_display(m_rad);
 
-	prev_remote_ls = RemoteData.Gait;
+	//prev_remote_ls = RemoteData.Gait;
 
 	SendTask();
 }
@@ -186,7 +191,7 @@ void DisplayTask(void)
 	//DispFootGroundingData(FootGrounding);
 }
 
-void RevTask(void)
+/* void RevTask(void)
 {
 	serial_frame_t sFrame;
 	if (!serialRevFrame(&sFrame, setting.fd_uart, FRAME_HEAD))
@@ -212,12 +217,43 @@ void RevTask(void)
 		free(sFrame.pdata);
 	}
 	ReadGyro_RPY();
-}
+}*/
 
 void LowPriorityTask(void)
 {
+
 	XBOX_Read(&Xbox);
 	XBOX_Normal(&Xbox);
+
+	GYRO_Read(&Gyro, GYRO_DATATYPE_ACC);
+	GYRO_Read(&Gyro, GYRO_DATATYPE_ANGLE);
+
+	/* switch (GYRO_Read(&Gyro))
+	{
+	case GYRO_REV_ACC:
+		printf("r_a_x:%f,r_a_y:%f,r_a_z:%f,f_a_x:%f,f_a_y:%f,f_a_z:%f\n", Gyro.Acc.acc_x, Gyro.Acc.acc_y, Gyro.Acc.acc_z,
+			   GYRO_GetFilt(&Gyro, GYRO_DATATYPE_ACC, GYRO_DATASUBTYPE_X),
+			   GYRO_GetFilt(&Gyro, GYRO_DATATYPE_ACC, GYRO_DATASUBTYPE_Y),
+			   GYRO_GetFilt(&Gyro, GYRO_DATATYPE_ACC, GYRO_DATASUBTYPE_Z));
+		break;
+
+	case GYRO_REV_ANGLE:
+		printf("r_ro:%f,r_pi:%f,r_ya:%f,f_ro:%f,f_pi:%f,f_ya:%f\n", Gyro.Angle.roll, Gyro.Angle.pitch, Gyro.Angle.yaw,
+			   GYRO_GetFilt(&Gyro, GYRO_DATATYPE_ANGLE, GYRO_DATASUBTYPE_X),
+			   GYRO_GetFilt(&Gyro, GYRO_DATATYPE_ANGLE, GYRO_DATASUBTYPE_Y),
+			   GYRO_GetFilt(&Gyro, GYRO_DATATYPE_ANGLE, GYRO_DATASUBTYPE_Z));
+		break;
+
+	default:
+		break;
+	}*/
+
+	GYRO_RecLog(&Gyro);
 	//DisplayTask();
 	//RevTask();
+}
+
+void ExitTask(void)
+{
+	GYRO_Close(&Gyro);
 }

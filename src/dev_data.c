@@ -135,7 +135,7 @@ void DispGyroData(void)
 	printf("\n");
 }*/
 
-GYRO_t WT901C;
+/* GYRO_t WT901C;
 
 queue_t *Window_yaw;
 queue_t *Window_pitch;
@@ -179,7 +179,7 @@ float GetGyro_FilterPitch(void)
 float GetGyro_FilterYaw(void)
 {
 	return Filter_RPY[2];
-}
+}*/
 /*
 void CreateGyroLogFile(void)
 {

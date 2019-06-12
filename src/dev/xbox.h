@@ -71,8 +71,8 @@ typedef struct XBOX_t
 	float ry_f; //Right Axis-y Normalized Factor
 	float lt_f; //Switch -LT Normalized Factor
 	float rt_f; //Switch -RT Normalized Factor
-	char xx_l;  //Crossing -X Logic Value
-	char yy_l;  //Crossing -Y Logic Value
+	int xx_l;   //Crossing -X Logic Value
+	int yy_l;   //Crossing -Y Logic Value
 
 	signed char a_edge;
 	signed char b_edge;

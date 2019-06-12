@@ -3,7 +3,7 @@
 #include <wiringPi.h>
 #endif
 
-#define CALC_CYCLE_US 10000
+#define CALC_CYCLE_US 5000
 
 extern int usleep(__useconds_t __useconds);
 
@@ -26,6 +26,9 @@ Sys_Setting_t setting;
 void sys_exit(int signo)
 {
 	printf("\nProgram aborted.\n");
+
+	ExitTask();
+
 	serialClose(setting.fd_uart);
 	if (setting.log.enable == ON)
 	{
@@ -54,7 +57,7 @@ void sys_init(Sys_Interface_t interface, Sys_SynSig_t syn_sig, Sys_EnLog_t log_e
 
 	if (setting.log.enable == ON)
 	{
-		char str_data[64], str_cwd[64];
+		char str_data[64];
 		time_t timer = time(NULL);
 
 		strftime(str_data, sizeof(str_data), "%Y-%m-%d[%H:%M:%S]", localtime(&timer));
@@ -123,20 +126,13 @@ void sys_loop()
 		{
 			time_begin_us = sys_timer_us();
 			handle_IRQ();
+			LowPriorityTask();
 			time_end_us = sys_timer_us();
 
 			time_diff_us = time_end_us - time_begin_us;
 
 			if (time_diff_us < CALC_CYCLE_US)
-			{
-				time_begin_us = sys_timer_us();
-				while (time_end_us - time_begin_us < CALC_CYCLE_US - time_diff_us)
-				{
-					LowPriorityTask();
-					time_end_us = sys_timer_us();
-				}
-			}
-			//usleep(CALC_CYCLE_US - time_diff_us);
+				usleep(CALC_CYCLE_US - time_diff_us);
 			else
 				PRINTF_WARNING("Execute Overtime, -beyond_us:\t%ld", time_diff_us);
 		}
