@@ -12,6 +12,36 @@ static void absLimit(float *num, float Limit)
 	}
 }
 
+static float findMax(float item_a, float item_b)
+{
+	if (item_a > item_b)
+		return item_a;
+	else
+		return item_b;
+}
+
+static float findMin(float item_a, float item_b)
+{
+	if (item_a < item_b)
+		return item_a;
+	else
+		return item_b;
+}
+
+static float loopSub(float upper, float lower, float tolerance, float item_a, float item_b)
+{
+
+	if (fabs(item_a - item_b) > tolerance)
+	{
+		if (item_a > item_b)
+			return item_a - ((upper - lower) + item_b);
+		else
+			return (item_a + (upper - lower)) - item_b;
+	}
+	else
+		return item_a - item_b;
+}
+
 void PID_Regular_Reset(PID_Regular_t *PID_Regular, float Kp, float Ki, float Kd, float Deadband, float MaxInt, float MaxOutput)
 {
 	/*设定PID系数及最大输出*/
@@ -32,6 +62,7 @@ void PID_Regular_Reset(PID_Regular_t *PID_Regular, float Kp, float Ki, float Kd,
 	PID_Regular->Ref = 0.0f;
 	PID_Regular->Output = 0.0f;
 }
+
 void PID_Regular_Cacl(PID_Regular_t *PID_Regular)
 {
 	static float Error = 0.0f, Integrate = 0.0f, Delta = 0.0f, Output = 0.0f;

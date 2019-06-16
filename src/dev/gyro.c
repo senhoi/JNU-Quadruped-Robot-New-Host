@@ -46,24 +46,27 @@ void GYRO_ConfigLog(GYRO_t *gyro, int en_log, uint8_t type)
 
 void GYRO_RecLog(GYRO_t *gyro)
 {
-	if (gyro->log_ctrl & GYRO_LOG_ACC)
-		fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->Acc.acc_x, gyro->Acc.acc_y, gyro->Acc.acc_z);
-	if (gyro->log_ctrl & GYRO_LOG_ANGLE)
-		fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.2f\t", gyro->Angle.roll, gyro->Angle.pitch, gyro->Angle.yaw);
-	if (gyro->log_ctrl & GYRO_LOG_ANGVEL)
-		fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->AngVel.w_x, gyro->AngVel.w_y, gyro->AngVel.w_z);
-	if (gyro->log_ctrl & GYRO_LOG_MANGE)
-		fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->Magne.h_x, gyro->Magne.h_y, gyro->Magne.h_z);
-	if (gyro->log_ctrl & GYRO_LOG_ACC_FT)
-		fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->Acc_ft.acc_x, gyro->Acc_ft.acc_y, gyro->Acc_ft.acc_z);
-	if (gyro->log_ctrl & GYRO_LOG_ANGLE_FT)
-		fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.2f\t", gyro->Angle_ft.roll, gyro->Angle_ft.pitch, gyro->Angle_ft.yaw);
-	if (gyro->log_ctrl & GYRO_LOG_ANGVEL_FT)
-		fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->AngVel_ft.w_x, gyro->AngVel_ft.w_y, gyro->AngVel_ft.w_z);
-	if (gyro->log_ctrl & GYRO_LOG_MANGE_FT)
-		fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->Magne_ft.h_x, gyro->Magne_ft.h_y, gyro->Magne_ft.h_z);
+	if (gyro->log_fp != NULL)
+	{
+		if (gyro->log_ctrl & GYRO_LOG_ACC)
+			fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->Acc.acc_x, gyro->Acc.acc_y, gyro->Acc.acc_z);
+		if (gyro->log_ctrl & GYRO_LOG_ANGLE)
+			fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.2f\t", gyro->Angle.roll, gyro->Angle.pitch, gyro->Angle.yaw);
+		if (gyro->log_ctrl & GYRO_LOG_ANGVEL)
+			fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->AngVel.w_x, gyro->AngVel.w_y, gyro->AngVel.w_z);
+		if (gyro->log_ctrl & GYRO_LOG_MANGE)
+			fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->Magne.h_x, gyro->Magne.h_y, gyro->Magne.h_z);
+		if (gyro->log_ctrl & GYRO_LOG_ACC_FT)
+			fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->Acc_ft.acc_x, gyro->Acc_ft.acc_y, gyro->Acc_ft.acc_z);
+		if (gyro->log_ctrl & GYRO_LOG_ANGLE_FT)
+			fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.2f\t", gyro->Angle_ft.roll, gyro->Angle_ft.pitch, gyro->Angle_ft.yaw);
+		if (gyro->log_ctrl & GYRO_LOG_ANGVEL_FT)
+			fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->AngVel_ft.w_x, gyro->AngVel_ft.w_y, gyro->AngVel_ft.w_z);
+		if (gyro->log_ctrl & GYRO_LOG_MANGE_FT)
+			fprintf(gyro->log_fp, "%7.3f\t%7.3f\t%7.3f\t", gyro->Magne_ft.h_x, gyro->Magne_ft.h_y, gyro->Magne_ft.h_z);
 
-	fprintf(gyro->log_fp, "\n");
+		fprintf(gyro->log_fp, "\n");
+	}
 }
 
 int GYRO_Init(GYRO_t *gyro, int baud)

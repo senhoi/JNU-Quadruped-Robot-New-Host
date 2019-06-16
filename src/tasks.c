@@ -44,8 +44,8 @@ GYRO_t Gyro;
 void InitTask(void)
 {
 	XBOX_Init(&Xbox);
-	GYRO_Init(&Gyro, 115200);
-	GYRO_ConfigLog(&Gyro, GYRO_LOG_ENABLE, GYRO_LOG_ACC | GYRO_LOG_ACC_FT | GYRO_LOG_ANGLE | GYRO_LOG_ANGLE_FT);
+	//GYRO_Init(&Gyro, 115200);
+	GYRO_ConfigLog(&Gyro, GYRO_LOG_DISABLE, GYRO_LOG_ACC | GYRO_LOG_ACC_FT | GYRO_LOG_ANGLE | GYRO_LOG_ANGLE_FT);
 	GYRO_ConfigFilt(&Gyro, GYRO_DATATYPE_ACC, 0x07, 100);
 	GYRO_ConfigFilt(&Gyro, GYRO_DATATYPE_ANGLE, 0x07, 100);
 
@@ -53,7 +53,7 @@ void InitTask(void)
 	m_rad = cmat_malloc(3, 4);
 
 	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 72, 300, 230, 150, 500);
-	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.7f, 0.01f, 0.55f,
+	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.7f, 0.005f, 0.55f,
 					0.0f, 0.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 425.0f, 0.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 294.0f, 480.0f, 0.0f, 0.0f);
@@ -172,12 +172,14 @@ void InterruptTask(void)
 	RC_Update_BodyPose(&QuadrupedRobot, QuadrupedRobot.Pose.body_x, QuadrupedRobot.Pose.body_y, QuadrupedRobot.Pose.body_z, 0, QuadrupedRobot.Pose.body_pi, QuadrupedRobot.Pose.body_ya);
 	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
-	RC_Calc_FootTraj(&QuadrupedRobot, Phase, m_pos);
+	RC_Calc_FootTraj(&QuadrupedRobot, Phase, QuadrupedRobot.Move.span_x / Range.span_x * pi / 12, m_pos);
 	//cmat_display(m_pos);
 	RC_InvKine(&QuadrupedRobot, m_pos, m_rad);
 	//cmat_display(m_rad);
 	RC_AngleCorrect(&QuadrupedRobot, m_rad);
 	//cmat_display(m_rad);
+
+	LOG(setting.log.fd, "%7.4f\t%7.4f\t%7.4f", cmat_get(m_rad, 0, 0) / pi * 180, cmat_get(m_rad, 1, 0) / pi * 180, cmat_get(m_rad, 2, 0) / pi * 180);
 
 	//prev_remote_ls = RemoteData.Gait;
 

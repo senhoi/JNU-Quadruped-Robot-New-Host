@@ -1,6 +1,8 @@
 #ifndef _PID_H
 #define _PID_H
 
+#include <math.h>
+
 typedef struct PID_Regular_t
 {
 	float Kp;

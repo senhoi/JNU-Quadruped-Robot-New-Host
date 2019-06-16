@@ -106,7 +106,7 @@ void RC_Update_PosPose(RC_Robot_t *pRoobt,
 void RC_Update_ZeroPara(RC_Robot_t *pRoobt,
 						double zero_w, double zero_l, double zero_x, double zero_y);
 
-void RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_, matrix_t *m_angle);
+void RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_, double r_angle, matrix_t *m_angle);
 
 void RC_InvKine(RC_Robot_t *pRoobt, matrix_t *m_pos, matrix_t *m_angle);
 

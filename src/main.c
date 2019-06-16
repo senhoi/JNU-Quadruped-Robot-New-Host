@@ -145,6 +145,6 @@ void sys_loop()
 
 int main()
 {
-	sys_init(USB, TIMER, OFF);
+	sys_init(USB, TIMER, ON);
 	sys_loop();
 }
