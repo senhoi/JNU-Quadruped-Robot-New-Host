@@ -36,7 +36,7 @@ struct
 
 	float zero_x;
 	float zero_y;
-} Range = {200.0f, 100.0f, 100.0f, pi / 12, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 150.0f, pi / 15, pi / 15, pi / 15, 100.0f, 100.0f};
+} Range = {200.0f, 100.0f, 100.0f, pi / 12, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 150.0f, pi / 15, pi / 10, pi / 15, 100.0f, 100.0f};
 
 XBOX_t Xbox;
 GYRO_t Gyro;
@@ -55,8 +55,8 @@ void InitTask(void)
 	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 72, 300, 230, 150, 500);
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.7f, 0.005f, 0.55f,
 					0.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 425.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 294.0f, 480.0f, 0.0f, 0.0f);
+					0.0f, 0.0f, 400.0f, 0.0f, 0.0f, 0.0f,
+					0.0f, 0.0f, 244.0f, 560.0f, 0.0f, 0.0f);
 
 	PID_Regular_Reset(&PID_yaw, 0.02f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 }
@@ -144,7 +144,7 @@ void KeyPressTask(void)
 		QuadrupedRobot.Move.span_z = 0;
 
 		QuadrupedRobot.Pose.body_x = Xbox.ly_f * Range.body_x;
-		QuadrupedRobot.Pose.body_y = Xbox.lx_f * Range.body_y;
+		QuadrupedRobot.Pose.body_ro = Xbox.lx_f * Range.roll;
 		QuadrupedRobot.Pose.body_ya = Xbox.rx_f * Range.yaw;
 		QuadrupedRobot.Pose.body_pi = Xbox.ry_f * Range.pitch;
 		break;
@@ -169,10 +169,10 @@ void InterruptTask(void)
 	KeyPressTask();
 
 	RC_Update_ZeroPara(&QuadrupedRobot, QuadrupedRobot.Zero.width, QuadrupedRobot.Zero.length, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
-	RC_Update_BodyPose(&QuadrupedRobot, QuadrupedRobot.Pose.body_x, QuadrupedRobot.Pose.body_y, QuadrupedRobot.Pose.body_z, 0, QuadrupedRobot.Pose.body_pi, QuadrupedRobot.Pose.body_ya);
+	RC_Update_BodyPose(&QuadrupedRobot, QuadrupedRobot.Pose.body_x, QuadrupedRobot.Pose.body_y, QuadrupedRobot.Pose.body_z, QuadrupedRobot.Pose.body_ro, QuadrupedRobot.Pose.body_pi, QuadrupedRobot.Pose.body_ya);
 	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
 
-	RC_Calc_FootTraj(&QuadrupedRobot, Phase, QuadrupedRobot.Move.span_x / Range.span_x * pi / 12, m_pos);
+	RC_Calc_FootTraj(&QuadrupedRobot, Phase, QuadrupedRobot.Move.span_x / Range.span_x * pi / 24, m_pos);
 	//cmat_display(m_pos);
 	RC_InvKine(&QuadrupedRobot, m_pos, m_rad);
 	//cmat_display(m_rad);
