@@ -1,4 +1,4 @@
-#include"TP_polynomial.h"
+#include "TP_polynomial.h"
 
 static void TP_CalcCoeff_QuinticPoly(TP_QuinticPoly_t *pTP_QuinticPoly)
 {
@@ -45,27 +45,30 @@ uint8_t TP_Calc_QuinticPoly(TP_QuinticPoly_t *pTP_QuinticPoly)
 	pTP_QuinticPoly->time += pTP_QuinticPoly->interval;
 
 	pTP_QuinticPoly->current_acc = 2 * pTP_QuinticPoly->a[2] + 6 * pTP_QuinticPoly->a[3] * pTP_QuinticPoly->time +
-		12 * pTP_QuinticPoly->a[4] * pow(pTP_QuinticPoly->time, 2) + 20 * pTP_QuinticPoly->a[5] * pow(pTP_QuinticPoly->time, 3);
+								   12 * pTP_QuinticPoly->a[4] * pow(pTP_QuinticPoly->time, 2) + 20 * pTP_QuinticPoly->a[5] * pow(pTP_QuinticPoly->time, 3);
 
 	pTP_QuinticPoly->current_spd = pTP_QuinticPoly->a[1] + 2 * pTP_QuinticPoly->a[2] * pTP_QuinticPoly->time + 3 * pTP_QuinticPoly->a[3] * pow(pTP_QuinticPoly->time, 2) +
-		4 * pTP_QuinticPoly->a[4] * pow(pTP_QuinticPoly->time, 3) + 5 * pTP_QuinticPoly->a[5] * pow(pTP_QuinticPoly->time, 4);
+								   4 * pTP_QuinticPoly->a[4] * pow(pTP_QuinticPoly->time, 3) + 5 * pTP_QuinticPoly->a[5] * pow(pTP_QuinticPoly->time, 4);
 
 	pTP_QuinticPoly->current_pos = pTP_QuinticPoly->a[0] + pTP_QuinticPoly->a[1] * pTP_QuinticPoly->time + pTP_QuinticPoly->a[2] * pow(pTP_QuinticPoly->time, 2) +
-		pTP_QuinticPoly->a[3] * pow(pTP_QuinticPoly->time, 3) + pTP_QuinticPoly->a[4] * pow(pTP_QuinticPoly->time, 4) + pTP_QuinticPoly->a[5] * pow(pTP_QuinticPoly->time, 5);
+								   pTP_QuinticPoly->a[3] * pow(pTP_QuinticPoly->time, 3) + pTP_QuinticPoly->a[4] * pow(pTP_QuinticPoly->time, 4) + pTP_QuinticPoly->a[5] * pow(pTP_QuinticPoly->time, 5);
 
 	return 1;
 }
 
 float TP_Calc_QuinticPoly__(TP_QuinticPoly_t *pTP_QuinticPoly, float t)
 {
+	if (t > pTP_QuinticPoly->cycle)
+		return pTP_QuinticPoly->current_pos;
+
 	pTP_QuinticPoly->current_acc = 2 * pTP_QuinticPoly->a[2] + 6 * pTP_QuinticPoly->a[3] * t +
-		12 * pTP_QuinticPoly->a[4] * pow(t, 2) + 20 * pTP_QuinticPoly->a[5] * pow(t, 3);
+								   12 * pTP_QuinticPoly->a[4] * pow(t, 2) + 20 * pTP_QuinticPoly->a[5] * pow(t, 3);
 
 	pTP_QuinticPoly->current_spd = pTP_QuinticPoly->a[1] + 2 * pTP_QuinticPoly->a[2] * t + 3 * pTP_QuinticPoly->a[3] * pow(t, 2) +
-		4 * pTP_QuinticPoly->a[4] * pow(t, 3) + 5 * pTP_QuinticPoly->a[5] * pow(t, 4);
+								   4 * pTP_QuinticPoly->a[4] * pow(t, 3) + 5 * pTP_QuinticPoly->a[5] * pow(t, 4);
 
 	pTP_QuinticPoly->current_pos = pTP_QuinticPoly->a[0] + pTP_QuinticPoly->a[1] * t + pTP_QuinticPoly->a[2] * pow(t, 2) +
-		pTP_QuinticPoly->a[3] * pow(t, 3) + pTP_QuinticPoly->a[4] * pow(t, 4) + pTP_QuinticPoly->a[5] * pow(t, 5);
+								   pTP_QuinticPoly->a[3] * pow(t, 3) + pTP_QuinticPoly->a[4] * pow(t, 4) + pTP_QuinticPoly->a[5] * pow(t, 5);
 
 	return pTP_QuinticPoly->current_pos;
 }

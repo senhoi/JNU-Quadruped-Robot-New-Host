@@ -76,6 +76,8 @@ typedef struct Sys_Log_t
 
 typedef struct Sys_Setting_t
 {
+	int en_run;
+
 	Sys_Interface_t interface;
 	Sys_SynSig_t syn_sig;
 	Sys_Log_t log;

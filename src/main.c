@@ -43,6 +43,7 @@ void sys_exit(int signo)
 
 void sys_init(Sys_Interface_t interface, Sys_SynSig_t syn_sig, Sys_EnLog_t log_enable)
 {
+	setting.en_run = 1;
 	setting.interface = interface;
 	setting.syn_sig = syn_sig;
 	setting.log.enable = log_enable;
@@ -139,6 +140,11 @@ void sys_loop()
 		else if (setting.syn_sig == INTERRUPT)
 		{
 			LowPriorityTask();
+		}
+
+		if (!setting.en_run)
+		{
+			sys_exit(0);
 		}
 	}
 }

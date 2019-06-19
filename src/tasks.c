@@ -109,7 +109,7 @@ void KeyPressTask(void)
 	static int mode = 0;
 
 	XBOX_Edge(&Xbox);
-	XBOX_DispAll(&Xbox);
+	//XBOX_DispAll(&Xbox);
 
 	if (Xbox.xx_edge == -1)
 		QuadrupedRobot.Pose.body_z += 10;
@@ -129,6 +129,14 @@ void KeyPressTask(void)
 		mode = 0;
 	if (Xbox.b_edge == 1)
 		mode = 1;
+	if (Xbox.back_edge == 1)
+		setting.en_run = 0;
+
+	if (Xbox.home_edge == 1)
+	{
+		PerformInit();
+		mode = 2;
+	}
 
 	switch (mode)
 	{
@@ -147,6 +155,9 @@ void KeyPressTask(void)
 		QuadrupedRobot.Pose.body_ro = Xbox.lx_f * Range.roll;
 		QuadrupedRobot.Pose.body_ya = Xbox.rx_f * Range.yaw;
 		QuadrupedRobot.Pose.body_pi = Xbox.ry_f * Range.pitch;
+		break;
+	case 2:
+		PerformTask(&QuadrupedRobot);
 		break;
 
 	default:
