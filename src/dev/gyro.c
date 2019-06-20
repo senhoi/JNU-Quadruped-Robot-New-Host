@@ -19,22 +19,22 @@ void GYRO_ConfigLog(GYRO_t *gyro, int en_log, uint8_t type)
 
 		gyro->log_ctrl = type;
 
-		if (gyro->log_ctrl & GYRO_LOG_ACC)
-			fprintf(gyro->log_fp, "acce_x\tacce_y\tacce_z\t");
+		//if (gyro->log_ctrl & GYRO_LOG_ACC)
+		//	fprintf(gyro->log_fp, "acce_x\tacce_y\tacce_z\t");
 		if (gyro->log_ctrl & GYRO_LOG_ANGLE)
 			fprintf(gyro->log_fp, "ang_ro\tang_pi\tang_ya\t");
-		if (gyro->log_ctrl & GYRO_LOG_ANGVEL)
-			fprintf(gyro->log_fp, "omeg_x\tomeg_y\tomeg_z\t");
-		if (gyro->log_ctrl & GYRO_LOG_MANGE)
-			fprintf(gyro->log_fp, "mang_x\tmang_y\tmang_z\t");
-		if (gyro->log_ctrl & GYRO_LOG_ACC_FT)
-			fprintf(gyro->log_fp, "facce_x\tfacce_y\tfacce_z\t");
+		//if (gyro->log_ctrl & GYRO_LOG_ANGVEL)
+		//	fprintf(gyro->log_fp, "omeg_x\tomeg_y\tomeg_z\t");
+		//if (gyro->log_ctrl & GYRO_LOG_MANGE)
+		//	fprintf(gyro->log_fp, "mang_x\tmang_y\tmang_z\t");
+		//if (gyro->log_ctrl & GYRO_LOG_ACC_FT)
+		//	fprintf(gyro->log_fp, "facce_x\tfacce_y\tfacce_z\t");
 		if (gyro->log_ctrl & GYRO_LOG_ANGLE_FT)
 			fprintf(gyro->log_fp, "fang_ro\tfang_pi\tfang_ya\t");
-		if (gyro->log_ctrl & GYRO_LOG_ANGVEL_FT)
-			fprintf(gyro->log_fp, "fomeg_x\tfomeg_y\tfomeg_z\t");
-		if (gyro->log_ctrl & GYRO_LOG_MANGE_FT)
-			fprintf(gyro->log_fp, "fmang_x\tfmang_x\tfmang_x\t");
+		//if (gyro->log_ctrl & GYRO_LOG_ANGVEL_FT)
+		//	fprintf(gyro->log_fp, "fomeg_x\tfomeg_y\tfomeg_z\t");
+		//if (gyro->log_ctrl & GYRO_LOG_MANGE_FT)
+		//	fprintf(gyro->log_fp, "fmang_x\tfmang_x\tfmang_x\t");
 
 		fprintf(gyro->log_fp, "\n");
 	}

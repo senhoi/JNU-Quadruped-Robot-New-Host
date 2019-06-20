@@ -576,6 +576,6 @@ void PerformTask(RC_Robot_t *robot)
 	robot->Pose.body_pi = calc_body_pi();
 	robot->Pose.body_ya = calc_body_ya();
 
-	printf("span_x:%7.2f\tspan_y:%7.2f\tspan_z:%7.2f\tspan_w:%7.2f\n", robot->Move.span_x, robot->Move.span_y, robot->Move.span_z, robot->Move.span_w);
-	printf("body_x:%7.2f\tbody_z:%7.2f\tbody_ro:%7.2f\tbody_pi:%7.2f\tbody_ya:%7.2f\n", robot->Pose.body_x, robot->Pose.body_z, robot->Pose.body_ro, robot->Pose.body_pi, robot->Pose.body_ya);
+	//printf("span_x:%7.2f\tspan_y:%7.2f\tspan_z:%7.2f\tspan_w:%7.2f\n", robot->Move.span_x, robot->Move.span_y, robot->Move.span_z, robot->Move.span_w);
+	//printf("body_x:%7.2f\tbody_z:%7.2f\tbody_ro:%7.2f\tbody_pi:%7.2f\tbody_ya:%7.2f\n", robot->Pose.body_x, robot->Pose.body_z, robot->Pose.body_ro, robot->Pose.body_pi, robot->Pose.body_ya);
 }

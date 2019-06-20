@@ -12,6 +12,7 @@
 #include "usr_lib/PID/pid.h"
 #include "usr_lib/RC/RC_ext.h"
 #include "app/perform.h"
+#include "app/pose_ctrl.h"
 
 void InitTask(void);
 void InterruptTask(void);

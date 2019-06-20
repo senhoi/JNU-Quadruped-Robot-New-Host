@@ -13,7 +13,6 @@ matrix_t *m_rad;
 
 float Phase;
 
-PID_Regular_t PID_yaw;
 float Locked_yaw;
 struct
 {
@@ -44,10 +43,10 @@ GYRO_t Gyro;
 void InitTask(void)
 {
 	XBOX_Init(&Xbox);
-	//GYRO_Init(&Gyro, 115200);
+	GYRO_Init(&Gyro, 115200);
 	GYRO_ConfigLog(&Gyro, GYRO_LOG_DISABLE, GYRO_LOG_ACC | GYRO_LOG_ACC_FT | GYRO_LOG_ANGLE | GYRO_LOG_ANGLE_FT);
-	GYRO_ConfigFilt(&Gyro, GYRO_DATATYPE_ACC, 0x07, 100);
-	GYRO_ConfigFilt(&Gyro, GYRO_DATATYPE_ANGLE, 0x07, 100);
+	//GYRO_ConfigFilt(&Gyro, GYRO_DATATYPE_ACC, 0x07, 50);
+	GYRO_ConfigFilt(&Gyro, GYRO_DATATYPE_ANGLE, 0x07, 50);
 
 	m_pos = cmat_malloc(3, 4);
 	m_rad = cmat_malloc(3, 4);
@@ -58,7 +57,7 @@ void InitTask(void)
 					0.0f, 0.0f, 400.0f, 0.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 244.0f, 560.0f, 0.0f, 0.0f);
 
-	PID_Regular_Reset(&PID_yaw, 0.02f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+	//PID_Regular_Reset(&PID_yaw, 0.02f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void TimerTask(void)
@@ -107,6 +106,7 @@ void SendTask(void)
 void KeyPressTask(void)
 {
 	static int mode = 0;
+	static int auto_pose = 0;
 
 	XBOX_Edge(&Xbox);
 	//XBOX_DispAll(&Xbox);
@@ -138,12 +138,22 @@ void KeyPressTask(void)
 		mode = 2;
 	}
 
+	if (Xbox.lb_edge == 1)
+		PoseCtrlInit();
+
+	if (Xbox.rb_edge == 1)
+	{
+		auto_pose++;
+		if (auto_pose == 4)
+			auto_pose = 0;
+	}
+
 	switch (mode)
 	{
 	case 0:
 		QuadrupedRobot.Move.span_x = -Xbox.ly_f * Range.span_x;
 		QuadrupedRobot.Move.span_y = -Xbox.lx_f * Range.span_y;
-		QuadrupedRobot.Move.span_w = (Xbox.lt_f - Xbox.rt_f) * Range.span_w;
+		QuadrupedRobot.Move.span_w = (-Xbox.lt_f + Xbox.rt_f) * Range.span_w;
 		RC_ThreeDivided_Optimization(&QuadrupedRobot);
 		break;
 	case 1:
@@ -155,6 +165,7 @@ void KeyPressTask(void)
 		QuadrupedRobot.Pose.body_ro = Xbox.lx_f * Range.roll;
 		QuadrupedRobot.Pose.body_ya = Xbox.rx_f * Range.yaw;
 		QuadrupedRobot.Pose.body_pi = Xbox.ry_f * Range.pitch;
+
 		break;
 	case 2:
 		PerformTask(&QuadrupedRobot);
@@ -163,6 +174,8 @@ void KeyPressTask(void)
 	default:
 		break;
 	}
+
+	PoseCtrlTask(&QuadrupedRobot, auto_pose);
 }
 
 void InterruptTask(void)
@@ -181,7 +194,7 @@ void InterruptTask(void)
 
 	RC_Update_ZeroPara(&QuadrupedRobot, QuadrupedRobot.Zero.width, QuadrupedRobot.Zero.length, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
 	RC_Update_BodyPose(&QuadrupedRobot, QuadrupedRobot.Pose.body_x, QuadrupedRobot.Pose.body_y, QuadrupedRobot.Pose.body_z, QuadrupedRobot.Pose.body_ro, QuadrupedRobot.Pose.body_pi, QuadrupedRobot.Pose.body_ya);
-	RC_Update_PosPose(&QuadrupedRobot, 0, 0);
+	RC_Update_PosPose(&QuadrupedRobot, QuadrupedRobot.Pose.pos_ro, QuadrupedRobot.Pose.pos_pi);
 
 	RC_Calc_FootTraj(&QuadrupedRobot, Phase, QuadrupedRobot.Move.span_x / Range.span_x * pi / 24, m_pos);
 	//cmat_display(m_pos);
@@ -238,7 +251,7 @@ void LowPriorityTask(void)
 	XBOX_Read(&Xbox);
 	XBOX_Normal(&Xbox);
 
-	GYRO_Read(&Gyro, GYRO_DATATYPE_ACC);
+	//GYRO_Read(&Gyro, GYRO_DATATYPE_ACC);
 	GYRO_Read(&Gyro, GYRO_DATATYPE_ANGLE);
 
 	/* switch (GYRO_Read(&Gyro))
