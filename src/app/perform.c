@@ -85,16 +85,16 @@ static void set_span_y(void)
 	perform_span_y.motion[0].cycle = 22000;
 
 	perform_span_y.motion[1].pos = 50;
-	perform_span_y.motion[1].cycle = 500;
+	perform_span_y.motion[1].cycle = 100;
 
 	perform_span_y.motion[2].pos = 50;
-	perform_span_y.motion[2].cycle = 1000;
+	perform_span_y.motion[2].cycle = 1400;
 
 	perform_span_y.motion[3].pos = -50;
-	perform_span_y.motion[3].cycle = 1000;
+	perform_span_y.motion[3].cycle = 1400;
 
 	perform_span_y.motion[4].pos = 0;
-	perform_span_y.motion[4].cycle = 500;
+	perform_span_y.motion[4].cycle = 100;
 
 	TP_Init_QuinticPoly(&perform_span_y.tp, 0, 0, 0, 0, 0, 0, 0, 0.005);
 }
@@ -244,7 +244,7 @@ static void set_body_ro(void)
 
 static void set_body_pi(void)
 {
-	perform_body_pi.end_idx = 46;
+	perform_body_pi.end_idx = 51;
 	perform_body_pi._seg_idx = -1;
 	perform_body_pi.seg_idx = 0;
 	perform_body_pi.seg_time = 0;
@@ -253,143 +253,158 @@ static void set_body_pi(void)
 	perform_body_pi.motion[0].cycle = 7000;
 
 	perform_body_pi.motion[1].pos = pi / 15;
-	perform_body_pi.motion[1].cycle = 500;
+	perform_body_pi.motion[1].cycle = 200;
 
 	perform_body_pi.motion[2].pos = -pi / 15;
-	perform_body_pi.motion[2].cycle = 500;
+	perform_body_pi.motion[2].cycle = 400;
 
 	perform_body_pi.motion[3].pos = pi / 15;
-	perform_body_pi.motion[3].cycle = 500;
+	perform_body_pi.motion[3].cycle = 400;
 
 	perform_body_pi.motion[4].pos = -pi / 15;
-	perform_body_pi.motion[4].cycle = 500;
+	perform_body_pi.motion[4].cycle = 400;
 
 	perform_body_pi.motion[5].pos = pi / 15;
-	perform_body_pi.motion[5].cycle = 500;
+	perform_body_pi.motion[5].cycle = 400;
 
 	perform_body_pi.motion[6].pos = -pi / 15;
-	perform_body_pi.motion[6].cycle = 500;
+	perform_body_pi.motion[6].cycle = 400;
 
 	perform_body_pi.motion[7].pos = pi / 15;
-	perform_body_pi.motion[7].cycle = 500;
+	perform_body_pi.motion[7].cycle = 400;
 
 	perform_body_pi.motion[8].pos = -pi / 15;
-	perform_body_pi.motion[8].cycle = 500;
+	perform_body_pi.motion[8].cycle = 400;
 
 	perform_body_pi.motion[9].pos = pi / 15;
-	perform_body_pi.motion[9].cycle = 500;
+	perform_body_pi.motion[9].cycle = 400;
 
 	perform_body_pi.motion[10].pos = -pi / 15;
-	perform_body_pi.motion[10].cycle = 500;
+	perform_body_pi.motion[10].cycle = 400;
 
-	perform_body_pi.motion[11].pos = +pi / 15;
-	perform_body_pi.motion[11].cycle = 500;
+	perform_body_pi.motion[11].pos = pi / 15;
+	perform_body_pi.motion[11].cycle = 400;
 
-	perform_body_pi.motion[12].pos = 0;
-	perform_body_pi.motion[12].cycle = 2500;
+	perform_body_pi.motion[12].pos = -pi / 15;
+	perform_body_pi.motion[12].cycle = 400;
 
-	//全向yaw+pitch
 	perform_body_pi.motion[13].pos = pi / 15;
-	perform_body_pi.motion[13].cycle = 500;
+	perform_body_pi.motion[13].cycle = 400;
 
-	perform_body_pi.motion[14].pos = 0;
-	perform_body_pi.motion[14].cycle = 500;
+	perform_body_pi.motion[14].pos = -pi / 15;
+	perform_body_pi.motion[14].cycle = 400;
 
 	perform_body_pi.motion[15].pos = -pi / 15;
-	perform_body_pi.motion[15].cycle = 500;
+	perform_body_pi.motion[15].cycle = 400;
 
-	perform_body_pi.motion[16].pos = 0;
-	perform_body_pi.motion[16].cycle = 500;
+	perform_body_pi.motion[16].pos = +pi / 15;
+	perform_body_pi.motion[16].cycle = 200;
 
-	perform_body_pi.motion[17].pos = pi / 15;
-	perform_body_pi.motion[17].cycle = 500;
+	perform_body_pi.motion[17].pos = 0;
+	perform_body_pi.motion[17].cycle = 2500;
 
-	perform_body_pi.motion[18].pos = 0;
+	//全向yaw+pitch
+	perform_body_pi.motion[18].pos = pi / 15;
 	perform_body_pi.motion[18].cycle = 500;
 
-	perform_body_pi.motion[19].pos = -pi / 15;
+	perform_body_pi.motion[19].pos = 0;
 	perform_body_pi.motion[19].cycle = 500;
 
-	perform_body_pi.motion[20].pos = 0;
+	perform_body_pi.motion[20].pos = -pi / 15;
 	perform_body_pi.motion[20].cycle = 500;
 
+	perform_body_pi.motion[21].pos = 0;
+	perform_body_pi.motion[21].cycle = 500;
+
+	perform_body_pi.motion[22].pos = pi / 15;
+	perform_body_pi.motion[22].cycle = 500;
+
+	perform_body_pi.motion[23].pos = 0;
+	perform_body_pi.motion[23].cycle = 500;
+
+	perform_body_pi.motion[24].pos = -pi / 15;
+	perform_body_pi.motion[24].cycle = 500;
+
+	perform_body_pi.motion[25].pos = 0;
+	perform_body_pi.motion[25].cycle = 500;
+
 	//摆头点头
-	perform_body_pi.motion[21].pos = pi / 15;
-	perform_body_pi.motion[21].cycle = 250;
-
-	perform_body_pi.motion[22].pos = 0;
-	perform_body_pi.motion[22].cycle = 250;
-
-	perform_body_pi.motion[23].pos = pi / 15;
-	perform_body_pi.motion[23].cycle = 250;
-
-	perform_body_pi.motion[24].pos = 0;
-	perform_body_pi.motion[24].cycle = 250;
-
-	perform_body_pi.motion[25].pos = pi / 15;
-	perform_body_pi.motion[25].cycle = 250;
-
-	perform_body_pi.motion[26].pos = 0;
+	perform_body_pi.motion[26].pos = pi / 15;
 	perform_body_pi.motion[26].cycle = 250;
 
-	perform_body_pi.motion[27].pos = pi / 15;
+	perform_body_pi.motion[27].pos = 0;
 	perform_body_pi.motion[27].cycle = 250;
 
-	perform_body_pi.motion[28].pos = 0;
+	perform_body_pi.motion[28].pos = pi / 15;
 	perform_body_pi.motion[28].cycle = 250;
 
-	perform_body_pi.motion[29].pos = pi / 15;
+	perform_body_pi.motion[29].pos = 0;
 	perform_body_pi.motion[29].cycle = 250;
 
-	perform_body_pi.motion[30].pos = 0;
+	perform_body_pi.motion[30].pos = pi / 15;
 	perform_body_pi.motion[30].cycle = 250;
 
-	perform_body_pi.motion[31].pos = pi / 15;
+	perform_body_pi.motion[31].pos = 0;
 	perform_body_pi.motion[31].cycle = 250;
 
-	perform_body_pi.motion[32].pos = 0;
+	perform_body_pi.motion[32].pos = pi / 15;
 	perform_body_pi.motion[32].cycle = 250;
 
 	perform_body_pi.motion[33].pos = 0;
-	perform_body_pi.motion[33].cycle = 14000;
+	perform_body_pi.motion[33].cycle = 250;
 
-	//sexy 36s+
 	perform_body_pi.motion[34].pos = pi / 15;
-	perform_body_pi.motion[34].cycle = 500;
+	perform_body_pi.motion[34].cycle = 250;
 
-	perform_body_pi.motion[35].pos = -pi / 15;
-	perform_body_pi.motion[35].cycle = 1000;
+	perform_body_pi.motion[35].pos = 0;
+	perform_body_pi.motion[35].cycle = 250;
 
 	perform_body_pi.motion[36].pos = pi / 15;
-	perform_body_pi.motion[36].cycle = 1000;
+	perform_body_pi.motion[36].cycle = 250;
 
 	perform_body_pi.motion[37].pos = 0;
-	perform_body_pi.motion[37].cycle = 500;
+	perform_body_pi.motion[37].cycle = 250;
 
-	//sexy 39s+
 	perform_body_pi.motion[38].pos = 0;
-	perform_body_pi.motion[38].cycle = 300;
+	perform_body_pi.motion[38].cycle = 14000;
 
+	//sexy 36s+
 	perform_body_pi.motion[39].pos = pi / 15;
-	perform_body_pi.motion[39].cycle = 225;
+	perform_body_pi.motion[39].cycle = 500;
 
 	perform_body_pi.motion[40].pos = -pi / 15;
-	perform_body_pi.motion[40].cycle = 450;
+	perform_body_pi.motion[40].cycle = 1000;
 
-	perform_body_pi.motion[41].pos = 0;
-	perform_body_pi.motion[41].cycle = 225;
+	perform_body_pi.motion[41].pos = pi / 15;
+	perform_body_pi.motion[41].cycle = 1000;
 
 	perform_body_pi.motion[42].pos = 0;
-	perform_body_pi.motion[42].cycle = 600;
+	perform_body_pi.motion[42].cycle = 500;
 
-	perform_body_pi.motion[43].pos = pi / 15;
-	perform_body_pi.motion[43].cycle = 225;
+	//sexy 39s+
+	perform_body_pi.motion[43].pos = 0;
+	perform_body_pi.motion[43].cycle = 300;
 
-	perform_body_pi.motion[44].pos = -pi / 15;
-	perform_body_pi.motion[44].cycle = 450;
+	perform_body_pi.motion[44].pos = pi / 15;
+	perform_body_pi.motion[44].cycle = 225;
 
-	perform_body_pi.motion[45].pos = 0;
-	perform_body_pi.motion[45].cycle = 225;
+	perform_body_pi.motion[45].pos = -pi / 15;
+	perform_body_pi.motion[45].cycle = 450;
+
+	perform_body_pi.motion[46].pos = 0;
+	perform_body_pi.motion[46].cycle = 225;
+
+	perform_body_pi.motion[47].pos = 0;
+	perform_body_pi.motion[47].cycle = 600;
+
+	perform_body_pi.motion[48].pos = pi / 15;
+	perform_body_pi.motion[48].cycle = 225;
+
+	perform_body_pi.motion[49].pos = -pi / 15;
+	perform_body_pi.motion[49].cycle = 450;
+
+	perform_body_pi.motion[50].pos = 0;
+	perform_body_pi.motion[50].cycle = 225;
 
 	TP_Init_QuinticPoly(&perform_body_pi.tp, 0, 0, 0, 0, 0, 0, 0, 0.005);
 }
