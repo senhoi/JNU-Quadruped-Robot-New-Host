@@ -175,7 +175,7 @@ void KeyPressTask(void)
 		break;
 	}
 
-	if (mode != 2)
+	if (mode != 0)
 		PoseCtrlTask(&QuadrupedRobot, auto_pose);
 }
 
