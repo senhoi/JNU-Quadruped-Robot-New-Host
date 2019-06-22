@@ -82,16 +82,16 @@ static void set_span_y(void)
 	perform_span_y.seg_time = 0;
 
 	perform_span_y.motion[0].pos = 0;
-	perform_span_y.motion[0].cycle = 22000;
+	perform_span_y.motion[0].cycle = 23000;
 
-	perform_span_y.motion[1].pos = 50;
+	perform_span_y.motion[1].pos = 0;
 	perform_span_y.motion[1].cycle = 100;
 
-	perform_span_y.motion[2].pos = 50;
-	perform_span_y.motion[2].cycle = 1400;
+	perform_span_y.motion[2].pos = 0;
+	perform_span_y.motion[2].cycle = 900;
 
-	perform_span_y.motion[3].pos = -50;
-	perform_span_y.motion[3].cycle = 1400;
+	perform_span_y.motion[3].pos = 0;
+	perform_span_y.motion[3].cycle = 900;
 
 	perform_span_y.motion[4].pos = 0;
 	perform_span_y.motion[4].cycle = 100;
@@ -101,7 +101,7 @@ static void set_span_y(void)
 
 static void set_span_z(void)
 {
-	perform_span_z.end_idx = 7;
+	perform_span_z.end_idx = 10;
 	perform_span_z._seg_idx = -1;
 	perform_span_z.seg_idx = 0;
 	perform_span_z.seg_time = 0;
@@ -118,14 +118,23 @@ static void set_span_z(void)
 	perform_span_z.motion[3].pos = 0;
 	perform_span_z.motion[3].cycle = 14500;
 
-	perform_span_z.motion[4].pos = 35;
+	perform_span_z.motion[4].pos = 0;
 	perform_span_z.motion[4].cycle = 500;
 
-	perform_span_z.motion[5].pos = 35;
-	perform_span_z.motion[5].cycle = 13500;
+	perform_span_z.motion[5].pos = 0;
+	perform_span_z.motion[5].cycle = 1000;
 
 	perform_span_z.motion[6].pos = 0;
-	perform_span_z.motion[6].cycle = 500;
+	perform_span_z.motion[6].cycle = 2000;
+
+	perform_span_z.motion[7].pos = 35;
+	perform_span_z.motion[7].cycle = 500;
+
+	perform_span_z.motion[8].pos = 35;
+	perform_span_z.motion[8].cycle = 10000;
+
+	perform_span_z.motion[9].pos = 0;
+	perform_span_z.motion[9].cycle = 500;
 
 	TP_Init_QuinticPoly(&perform_span_z.tp, 0, 0, 0, 0, 0, 0, 0, 0.005);
 }
@@ -140,10 +149,10 @@ static void set_span_w(void)
 	perform_span_w.motion[0].pos = 0;
 	perform_span_w.motion[0].cycle = 29000;
 
-	perform_span_w.motion[1].pos = pi / 17;
+	perform_span_w.motion[1].pos = pi / 22;
 	perform_span_w.motion[1].cycle = 200;
 
-	perform_span_w.motion[2].pos = pi / 17;
+	perform_span_w.motion[2].pos = pi / 22;
 	perform_span_w.motion[2].cycle = 6600;
 
 	perform_span_w.motion[3].pos = 0;
@@ -228,16 +237,40 @@ static void set_body_z(void)
 
 static void set_body_ro(void)
 {
-	perform_body_ro.end_idx = 2;
+	perform_body_ro.end_idx = 10;
 	perform_body_ro._seg_idx = -1;
 	perform_body_ro.seg_idx = 0;
 	perform_body_ro.seg_time = 0;
 
 	perform_body_ro.motion[0].pos = 0;
-	perform_body_ro.motion[0].cycle = 3000;
+	perform_body_ro.motion[0].cycle = 23000;
 
-	perform_body_ro.motion[1].pos = 0;
-	perform_body_ro.motion[1].cycle = 3000;
+	perform_body_ro.motion[1].pos = pi / 8;
+	perform_body_ro.motion[1].cycle = 125;
+
+	perform_body_ro.motion[2].pos = -pi / 8;
+	perform_body_ro.motion[2].cycle = 250;
+
+	perform_body_ro.motion[3].pos = pi / 8;
+	perform_body_ro.motion[3].cycle = 250;
+
+	perform_body_ro.motion[4].pos = -pi / 8;
+	perform_body_ro.motion[4].cycle = 250;
+
+	perform_body_ro.motion[5].pos = pi / 8;
+	perform_body_ro.motion[5].cycle = 250;
+
+	perform_body_ro.motion[6].pos = -pi / 8;
+	perform_body_ro.motion[6].cycle = 250;
+
+	perform_body_ro.motion[7].pos = pi / 8;
+	perform_body_ro.motion[7].cycle = 250;
+
+	perform_body_ro.motion[8].pos = -pi / 8;
+	perform_body_ro.motion[8].cycle = 250;
+
+	perform_body_ro.motion[9].pos = 0;
+	perform_body_ro.motion[9].cycle = 125;
 
 	TP_Init_QuinticPoly(&perform_body_ro.tp, 0, 0, 0, 0, 0, 0, 0, 0.005);
 }
@@ -366,7 +399,7 @@ static void set_body_pi(void)
 	perform_body_pi.motion[37].cycle = 250;
 
 	perform_body_pi.motion[38].pos = 0;
-	perform_body_pi.motion[38].cycle = 14000;
+	perform_body_pi.motion[38].cycle = 15000;
 
 	//sexy 36s+
 	perform_body_pi.motion[39].pos = pi / 15;
@@ -417,7 +450,7 @@ static void set_body_ya(void)
 	perform_body_ya.seg_time = 0;
 
 	perform_body_ya.motion[0].pos = 0;
-	perform_body_ya.motion[0].cycle = 13500;
+	perform_body_ya.motion[0].cycle = 14000;
 
 	//全向yaw+pitch
 	perform_body_ya.motion[1].pos = pi / 15;

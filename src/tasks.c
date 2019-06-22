@@ -35,7 +35,7 @@ struct
 
 	float zero_x;
 	float zero_y;
-} Range = {200.0f, 100.0f, 100.0f, pi / 12, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 150.0f, pi / 15, pi / 10, pi / 15, 100.0f, 100.0f};
+} Range = {200.0f, 100.0f, 100.0f, pi / 12, 2.0f, 0.6f, 0.5f, 0.5f, 100.0f, 100.0f, 150.0f, pi / 8, pi / 10, pi / 15, 100.0f, 100.0f};
 
 XBOX_t Xbox;
 GYRO_t Gyro;
@@ -52,10 +52,10 @@ void InitTask(void)
 	m_rad = cmat_malloc(3, 4);
 
 	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 72, 300, 230, 150, 500);
-	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.7f, 0.005f, 0.55f,
+	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.65f, 0.005f, 0.50f,
 					0.0f, 0.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 400.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 244.0f, 560.0f, 0.0f, 0.0f);
+					0.0f, 0.0f, 244.0f, 600.0f, 0.0f, 0.0f);
 
 	//PID_Regular_Reset(&PID_yaw, 0.02f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 }
@@ -175,7 +175,7 @@ void KeyPressTask(void)
 		break;
 	}
 
-	if (mode != 0)
+	if (mode == 0)
 		PoseCtrlTask(&QuadrupedRobot, auto_pose);
 }
 
