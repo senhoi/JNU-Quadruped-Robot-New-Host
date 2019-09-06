@@ -55,7 +55,7 @@ void InitTask(void)
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 0.65f, 0.005f, 0.50f,
 					0.0f, 0.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 400.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 244.0f, 600.0f, 0.0f, 0.0f);
+					0.0f, 0.0f, 284.0f, 500.0f, 0.0f, 0.0f);
 
 	//PID_Regular_Reset(&PID_yaw, 0.02f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 }
@@ -196,6 +196,8 @@ void InterruptTask(void)
 	RC_Update_ZeroPara(&QuadrupedRobot, QuadrupedRobot.Zero.width, QuadrupedRobot.Zero.length, QuadrupedRobot.Zero.centre_x, QuadrupedRobot.Zero.centre_y);
 	RC_Update_BodyPose(&QuadrupedRobot, QuadrupedRobot.Pose.body_x, QuadrupedRobot.Pose.body_y, QuadrupedRobot.Pose.body_z, QuadrupedRobot.Pose.body_ro, QuadrupedRobot.Pose.body_pi, QuadrupedRobot.Pose.body_ya);
 	RC_Update_PosPose(&QuadrupedRobot, QuadrupedRobot.Pose.pos_ro, QuadrupedRobot.Pose.pos_pi);
+
+	//printf("centre:%f\n", QuadrupedRobot.Zero.centre_x);
 
 	RC_Calc_FootTraj(&QuadrupedRobot, Phase, QuadrupedRobot.Move.span_x / Range.span_x * pi / 24, m_pos);
 	//cmat_display(m_pos);
