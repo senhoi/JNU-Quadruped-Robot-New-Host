@@ -51,7 +51,7 @@ perform_t perform_body_ya;
 
 static void set_span_x(void)
 {
-	perform_span_x.end_idx = 5;
+	perform_span_x.end_idx = 7;
 	perform_span_x._seg_idx = -1;
 	perform_span_x.seg_idx = 0;
 	perform_span_x.seg_time = 0;
@@ -60,16 +60,22 @@ static void set_span_x(void)
 	perform_span_x.motion[0].cycle = 500;
 
 	perform_span_x.motion[1].pos = -100;
-	perform_span_x.motion[1].cycle = 2500;
+	perform_span_x.motion[1].cycle = 2200;
 
-	perform_span_x.motion[2].pos = 100;
-	perform_span_x.motion[2].cycle = 1000;
+	perform_span_x.motion[2].pos = 0;
+	perform_span_x.motion[2].cycle = 500;
 
-	perform_span_x.motion[3].pos = 100;
-	perform_span_x.motion[3].cycle = 2500;
+	perform_span_x.motion[3].pos = 0;
+	perform_span_x.motion[3].cycle = 600;
 
-	perform_span_x.motion[4].pos = 0;
+	perform_span_x.motion[4].pos = 100;
 	perform_span_x.motion[4].cycle = 500;
+
+	perform_span_x.motion[5].pos = 100;
+	perform_span_x.motion[5].cycle = 2200;
+
+	perform_span_x.motion[6].pos = 0;
+	perform_span_x.motion[6].cycle = 500;
 
 	TP_Init_QuinticPoly(&perform_span_x.tp, 0, 0, 0, 0, 0, 0, 0, 0.005);
 }
@@ -194,16 +200,16 @@ static void set_body_z(void)
 	perform_body_z.seg_idx = 0;
 	perform_body_z.seg_time = 0;
 
-	perform_body_z.motion[0].pos = 400 + 50;
+	perform_body_z.motion[0].pos = 400 + 30;
 	perform_body_z.motion[0].cycle = 500;
 
-	perform_body_z.motion[1].pos = 400 - 50;
+	perform_body_z.motion[1].pos = 400 - 30;
 	perform_body_z.motion[1].cycle = 2000;
 
-	perform_body_z.motion[2].pos = 400 + 50;
+	perform_body_z.motion[2].pos = 400 + 30;
 	perform_body_z.motion[2].cycle = 2000;
 
-	perform_body_z.motion[3].pos = 400 - 50;
+	perform_body_z.motion[3].pos = 400 - 30;
 	perform_body_z.motion[3].cycle = 2000;
 
 	perform_body_z.motion[4].pos = 400;
@@ -213,19 +219,19 @@ static void set_body_z(void)
 	perform_body_z.motion[5].cycle = 18000;
 
 	//sexy
-	perform_body_z.motion[6].pos = 400 + 50;
+	perform_body_z.motion[6].pos = 400 + 30;
 	perform_body_z.motion[6].cycle = 500;
 
-	perform_body_z.motion[7].pos = 400 - 50;
+	perform_body_z.motion[7].pos = 400 - 30;
 	perform_body_z.motion[7].cycle = 500;
 
-	perform_body_z.motion[8].pos = 400 + 50;
+	perform_body_z.motion[8].pos = 400 + 30;
 	perform_body_z.motion[8].cycle = 500;
 
-	perform_body_z.motion[9].pos = 400 - 50;
+	perform_body_z.motion[9].pos = 400 - 30;
 	perform_body_z.motion[9].cycle = 500;
 
-	perform_body_z.motion[10].pos = 400 + 50;
+	perform_body_z.motion[10].pos = 400 + 30;
 	perform_body_z.motion[10].cycle = 500;
 
 	perform_body_z.motion[11].pos = 400;
@@ -245,28 +251,28 @@ static void set_body_ro(void)
 	perform_body_ro.motion[0].pos = 0;
 	perform_body_ro.motion[0].cycle = 23000;
 
-	perform_body_ro.motion[1].pos = pi / 8;
+	perform_body_ro.motion[1].pos = pi / 12;
 	perform_body_ro.motion[1].cycle = 125;
 
-	perform_body_ro.motion[2].pos = -pi / 8;
+	perform_body_ro.motion[2].pos = -pi / 12;
 	perform_body_ro.motion[2].cycle = 250;
 
-	perform_body_ro.motion[3].pos = pi / 8;
+	perform_body_ro.motion[3].pos = pi / 12;
 	perform_body_ro.motion[3].cycle = 250;
 
-	perform_body_ro.motion[4].pos = -pi / 8;
+	perform_body_ro.motion[4].pos = -pi / 12;
 	perform_body_ro.motion[4].cycle = 250;
 
-	perform_body_ro.motion[5].pos = pi / 8;
+	perform_body_ro.motion[5].pos = pi / 12;
 	perform_body_ro.motion[5].cycle = 250;
 
-	perform_body_ro.motion[6].pos = -pi / 8;
+	perform_body_ro.motion[6].pos = -pi / 12;
 	perform_body_ro.motion[6].cycle = 250;
 
-	perform_body_ro.motion[7].pos = pi / 8;
+	perform_body_ro.motion[7].pos = pi / 12;
 	perform_body_ro.motion[7].cycle = 250;
 
-	perform_body_ro.motion[8].pos = -pi / 8;
+	perform_body_ro.motion[8].pos = -pi / 12;
 	perform_body_ro.motion[8].cycle = 250;
 
 	perform_body_ro.motion[9].pos = 0;
